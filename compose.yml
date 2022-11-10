@@ -15,3 +15,7 @@ services:
       - 3000:3000
     links:
       - prometheus
+  prometheus-exporter:
+    build: ./prometheus-exporter
+    ports:
+      - 9877:9877
