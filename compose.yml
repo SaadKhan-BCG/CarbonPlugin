@@ -17,8 +17,14 @@ services:
       - prometheus
   prometheus-exporter:
     build: ./prometheus-exporter
+    environment:
+      CARBON_SDK_URL: "https://carbon-aware-api.azurewebsites.net"
+#      CARBON_SDK_PORT: 80
+#      CARBON_SDK_HOST: carbon-aware-sdk-webapi
     ports:
       - 9877:9877
+    links:
+      - carbon-aware-sdk-webapi
   carbon-aware-sdk-webapi:
     image: carbon-aware-sdk-webapi  # Note this is built manually for now from the carbon aware source code
     environment:

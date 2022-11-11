@@ -1,12 +1,13 @@
 """Application exporter"""
 
+import datetime
 import os
 import random
 import time
-from prometheus_client import start_http_server, Gauge, Enum
+from urllib.parse import quote
+
 import requests
-import datetime
-from urllib.parse import urlparse, urlencode, quote
+from prometheus_client import start_http_server, Gauge, Enum
 
 
 class AppMetrics:
@@ -16,9 +17,10 @@ class AppMetrics:
     """
     regions = ['westus', 'eastus', 'uksouth']
 
-    def __init__(self, app_host, app_port, polling_interval_seconds):
+    def __init__(self, polling_interval_seconds, app_host, app_port, app_url=None):
         self.app_host = app_host
         self.app_port = app_port
+        self.app_url = app_url
         self.polling_interval_seconds = polling_interval_seconds
 
         # Prometheus metrics to collect
@@ -35,9 +37,10 @@ class AppMetrics:
         prev_time = current_time - datetime.timedelta(minutes=1)
         prev_url_time = quote(prev_time.strftime("%Y-%m-%dT%H:%M"))
 
-        # temporary
-        # request_url = f"http://{self.app_host}:{self.app_port}/emissions/bylocation?location={location}&time={prev_url_time}&toTime={url_time}"
-        request_url = f"https://{self.app_host}/emissions/bylocation?location={location}&time={prev_url_time}&toTime={url_time}"
+        baseurl = f"http://{self.app_host}:{self.app_port}"
+        if self.app_url:
+            baseurl = self.app_url
+        request_url = f"{baseurl}/emissions/bylocation?location={location}&time={prev_url_time}&toTime={url_time}"
 
         resp = requests.get(url=request_url)
         return resp.json()[0]['rating']
@@ -69,15 +72,15 @@ def main():
 
     polling_interval_seconds = int(os.getenv("POLLING_INTERVAL_SECONDS", "5"))
     app_port = int(os.getenv("CARBON_SDK_PORT", "80"))
-    app_host = int(os.getenv("CARBON_SDK_HOST", "80"))
+    app_host = str(os.getenv("CARBON_SDK_HOST", "carbon-aware-sdk-webapi"))
+    app_url = os.getenv("CARBON_SDK_URL")
     exporter_port = int(os.getenv("EXPORTER_PORT", "9877"))
 
-    app_host = "carbon-aware-api.azurewebsites.net"     # temporary
-
     app_metrics = AppMetrics(
+        polling_interval_seconds=polling_interval_seconds,
         app_host=app_host,
         app_port=app_port,
-        polling_interval_seconds=polling_interval_seconds
+        app_url=app_url
     )
     start_http_server(exporter_port)
     app_metrics.run_metrics_loop()
