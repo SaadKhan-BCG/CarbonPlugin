@@ -19,3 +19,11 @@ services:
     build: ./prometheus-exporter
     ports:
       - 9877:9877
+  carbon-aware-sdk-webapi:
+    image: carbon-aware-sdk-webapi  # Note this is built manually for now from the carbon aware source code
+    environment:
+      CarbonAwareVars__CarbonIntensityDataSource: WattTime
+      WattTimeClient__Username: ${WattTimeClient__Username}
+      WattTimeClient__Password: ${WattTimeClient__Password}
+    ports:
+      - 8080:80
