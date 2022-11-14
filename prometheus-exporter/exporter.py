@@ -12,6 +12,8 @@ from prometheus_client import start_http_server, Gauge, Enum
 
 from regions import regions
 
+from carbon_emissions import CarbonEmissions
+
 
 class AppMetrics:
     """
@@ -20,10 +22,8 @@ class AppMetrics:
     """
 
     def __init__(self, polling_interval_seconds, app_host, app_port, app_url=None):
-        self.app_host = app_host
-        self.app_port = app_port
-        self.app_url = app_url
         self.polling_interval_seconds = polling_interval_seconds
+        self.carbon_emissions_client = CarbonEmissions(app_host, app_port, app_url)
 
         # Prometheus metrics to collect
         self.health = Enum("app_health", "Health", states=["healthy", "unhealthy"])
@@ -35,48 +35,19 @@ class AppMetrics:
                                              documentation="Carbon Consumed at Given Hour(gCo2Eq)",
                                              labelnames=["region", "time"])
 
-    # TODO refactor out carbon methods into separate class
-    def __get_carbon_emissions(self, location, prev_time, to_time):
-        """
-
-        :param location: Location to extract Carbon Data from
-        :param prev_time: url encoded start time
-        :param to_time: url encoded end time
-        :return: Carbon consumption at given time and region in gCO2eq/watt
-        """
-        baseurl = f"http://{self.app_host}:{self.app_port}"
-        if self.app_url:
-            baseurl = self.app_url
-
-        request_url = f"{baseurl}/emissions/bylocation?location={location}&time={prev_time}&toTime={to_time}"
-
-        resp = requests.get(url=request_url)
-        return resp.json()[0]['rating']
-
-    def __get_carbon_emissions_utc(self, location, utc_time):
-        """
-
-        :param location: Location to extract Carbon Data from
-        :param utc_time: python date object in utc time you want the carbon data at
-        :return: Carbon consumption at given time and region in gCO2eq/watt
-        """
-        url_time = quote(utc_time.strftime("%Y-%m-%dT%H:%M"))
-        prev_time = utc_time - datetime.timedelta(minutes=1)
-        prev_url_time = quote(prev_time.strftime("%Y-%m-%dT%H:%M"))
-
-        return self.__get_carbon_emissions(location, prev_url_time, url_time)
-
-    def __get_current_carbon_emissions(self, location):
-        current_time = datetime.datetime.utcnow()
-        return self.__get_carbon_emissions_utc(location, current_time)
-
     def __set_carbon_per_date_time(self, location, current_power_consumption):
+        """
+        Get carbon Metrics for given location throughout the day (from midnight to midnight the previous day)
+        Useful for identifying optimal times to run workloads
+        :param location: Region workload is ran
+        :param current_power_consumption: Power consumption in watts of your application/process
+        """
         start_time = datetime.datetime.utcnow() - datetime.timedelta(days=1)
         start_time = start_time - datetime.timedelta(hours=datetime.datetime.now().hour)
 
         for i in range(0, 23):
             cur_time = start_time + datetime.timedelta(hours=i)
-            carbon = self.__get_carbon_emissions_utc(location, cur_time)
+            carbon = self.carbon_emissions_client.get_carbon_emissions_utc(location, cur_time)
             self.carbon_consumption_time.labels(location, i).set(current_power_consumption * carbon)
 
     def __fetch(self):
@@ -91,7 +62,7 @@ class AppMetrics:
         self.power_usage.set(current_power_consumption)
         for region in regions:
             try:
-                carbon = self.__get_current_carbon_emissions(region)
+                carbon = self.carbon_emissions_client.get_current_carbon_emissions(region)
                 self.carbon_consumption.labels(region).set(current_power_consumption * carbon)
                 self.__set_carbon_per_date_time(region, current_power_consumption)
             except Exception as err:  # TODO make this better exception handling
