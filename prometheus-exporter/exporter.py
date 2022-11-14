@@ -1,18 +1,15 @@
 """Application exporter"""
 
 import datetime
+import logging
 import os
 import random
 import time
-import logging
-from urllib.parse import quote
 
-import requests
 from prometheus_client import start_http_server, Gauge, Enum
 
-from regions import regions
-
 from carbon_emissions import CarbonEmissions
+from regions import regions
 
 
 class AppMetrics:
