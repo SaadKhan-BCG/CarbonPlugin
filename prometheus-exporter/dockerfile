@@ -8,6 +8,7 @@ RUN pip install -r /usr/src/app/requirements.txt
 
 
 COPY exporter.py /usr/src/app/exporter.py
+COPY regions.py /usr/src/app/regions.py
 
 EXPOSE 9877
 
