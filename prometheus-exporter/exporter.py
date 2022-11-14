@@ -36,6 +36,7 @@ class AppMetrics:
         """
         Get carbon Metrics for given location throughout the day (from midnight to midnight the previous day)
         Useful for identifying optimal times to run workloads
+
         :param location: Region workload is ran
         :param current_power_consumption: Power consumption in watts of your application/process
         """

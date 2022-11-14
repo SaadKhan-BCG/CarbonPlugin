@@ -11,6 +11,7 @@ class CarbonEmissions:
 
     def __get_carbon_emissions(self, location, prev_time, to_time):
         """
+        Internal method to actually query the Carbon SDK for emissions data
 
         :param location: Location to extract Carbon Data from
         :param prev_time: url encoded start time
