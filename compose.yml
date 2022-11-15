@@ -29,7 +29,7 @@ services:
     links:
       - carbon-aware-sdk-webapi
   carbon-aware-sdk-webapi:
-    image: carbon-aware-sdk-webapi  # Note this is built manually for now from the carbon aware source code
+    image: saadbcg/carbon-aware-sdk-webapi  # Note this is built manually from the carbon aware source code
     environment:
       CarbonAwareVars__CarbonIntensityDataSource: WattTime
       WattTimeClient__Username: ${WattTimeClient__Username}

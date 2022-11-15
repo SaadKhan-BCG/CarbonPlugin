@@ -80,7 +80,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "sum_over_time(carbon_consumption{region=~\"$region\"}[24h])/60",
+          "expr": "sum (sum_over_time(carbon_consumption{region=~\"$region\"}[24h])/60)",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
@@ -140,7 +140,7 @@
             "properties": [
               {
                 "id": "displayName",
-                "value": "Co2Eq"
+                "value": "gCo2Eq"
               }
             ]
           }
@@ -412,8 +412,8 @@
       {
         "current": {
           "selected": true,
-          "text": "uksouth",
-          "value": "uksouth"
+          "text": "ukwest",
+          "value": "ukwest"
         },
         "datasource": {
           "type": "prometheus",
@@ -439,8 +439,8 @@
     ]
   },
   "time": {
-    "from": "2022-11-14T09:19:18.126Z",
-    "to": "2022-11-14T12:10:29.455Z"
+    "from": "now-1h",
+    "to": "now"
   },
   "timepicker": {},
   "timezone": "",
