@@ -67,7 +67,7 @@ class AppMetrics:
                 try:
                     carbon = self.carbon_emissions_client.get_current_carbon_emissions(region)
                     self.carbon_consumption.labels(region, container).set(power * carbon)
-                    # self.__set_carbon_per_date_time(region, power, container) # TODO fix this, its currently taking too long and causing things to break
+                    # self.__set_carbon_per_date_time(region, power, container)
                 except Exception as err:  # TODO make this better exception handling
                     print(f"Failed for region: {region} due to exception: \n{err}")
                     logging.warning(f"Failed for region: {region} due to exception: \n{err}")

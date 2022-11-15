@@ -11,7 +11,7 @@ def get_container_stats(docker_client, container):
     system_delta = stats['cpu_stats']['system_cpu_usage'] - stats['precpu_stats']['system_cpu_usage']
     len_cpu = stats['cpu_stats']['online_cpus']
     percentage = (usage_delta / system_delta) * len_cpu * 100
-    cpu_power = percentage * len_cpu * energy_profile['PUE'] * energy_profile['CPU'] / 60
+    cpu_power = percentage * len_cpu * energy_profile['PUE'] * energy_profile['CPU'] / 3600
 
     # Memory Power
     mem_usage = stats['memory_stats']['usage'] / 1073741824   # Number is in bytes so divide to get to GB
@@ -37,7 +37,7 @@ def get_stats():
         stats[containers.name] = get_container_stats(client, containers.id)
     return stats
 
-#
+
 # def run_metrics_loop():
 #     """Metrics fetching loop"""
 #
