@@ -3,13 +3,13 @@
 import datetime
 import logging
 import os
-import random
 import time
 
 from prometheus_client import start_http_server, Gauge, Enum
 
 from carbon_emissions import CarbonEmissions
 from regions import regions
+from container_stats import get_stats
 
 
 class AppMetrics:
@@ -24,15 +24,15 @@ class AppMetrics:
 
         # Prometheus metrics to collect
         self.health = Enum("app_health", "Health", states=["healthy", "unhealthy"])
-        self.power_usage = Gauge("power_usage", "Power Useage (Watts)")
+        self.power_usage = Gauge("power_usage", "Power Useage (Watts)", labelnames=["container_name"])
         self.carbon_consumption = Gauge(name="carbon_consumption",
                                         documentation="Carbon Consumed (gCo2Eq)",
-                                        labelnames=["region"])
+                                        labelnames=["region", "container_name"])
         self.carbon_consumption_time = Gauge(name="carbon_consumption_time",
                                              documentation="Carbon Consumed at Given Hour(gCo2Eq)",
-                                             labelnames=["region", "time"])
+                                             labelnames=["region", "time", "container_name"])
 
-    def __set_carbon_per_date_time(self, location, current_power_consumption):
+    def __set_carbon_per_date_time(self, location, current_power_consumption, container):
         """
         Get carbon Metrics for given location throughout the day (from midnight to midnight the previous day)
         Useful for identifying optimal times to run workloads
@@ -46,7 +46,8 @@ class AppMetrics:
         for i in range(0, 23):
             cur_time = start_time + datetime.timedelta(hours=i)
             carbon = self.carbon_emissions_client.get_carbon_emissions_utc(location, cur_time)
-            self.carbon_consumption_time.labels(location, i).set(current_power_consumption * carbon)
+            self.carbon_consumption_time.labels(location, i, container).set(current_power_consumption * carbon)
+            print(f"container: {container} region: {location} carbon: {carbon} power: {current_power_consumption}")
 
     def __fetch(self):
         """
@@ -54,17 +55,23 @@ class AppMetrics:
         new values.
         """
         self.health.state("healthy")
+        print("FETCHING DATA")
+        current_power_consumption = get_stats()
+        for container, power in current_power_consumption.items():
 
-        current_power_consumption = random.randint(10, 100)
+            self.power_usage.labels(container).set(power)
+            print("*****************************************")
+            print(f"Power for Container: {container} Watts: {power}")
 
-        self.power_usage.set(current_power_consumption)
-        for region in regions:
-            try:
-                carbon = self.carbon_emissions_client.get_current_carbon_emissions(region)
-                self.carbon_consumption.labels(region).set(current_power_consumption * carbon)
-                self.__set_carbon_per_date_time(region, current_power_consumption)
-            except Exception as err:  # TODO make this better exception handling
-                logging.warning(f"Failed for region: {region} due to exception: \n{err}")
+            for region in regions:
+                try:
+                    carbon = self.carbon_emissions_client.get_current_carbon_emissions(region)
+                    self.carbon_consumption.labels(region, container).set(power * carbon)
+                    # self.__set_carbon_per_date_time(region, power, container) # TODO fix this, its currently taking too long and causing things to break
+                except Exception as err:  # TODO make this better exception handling
+                    print(f"Failed for region: {region} due to exception: \n{err}")
+                    logging.warning(f"Failed for region: {region} due to exception: \n{err}")
+        print("*****************************************")
 
     def run_metrics_loop(self):
         """Metrics fetching loop"""
@@ -76,8 +83,8 @@ class AppMetrics:
 
 def main():
     """Main entry point"""
-
-    polling_interval_seconds = int(os.getenv("POLLING_INTERVAL_SECONDS", "5"))
+    logging.info("STARTING EXPORTER")
+    polling_interval_seconds = int(os.getenv("POLLING_INTERVAL_SECONDS", "10"))
     app_port = int(os.getenv("CARBON_SDK_PORT", "80"))
     app_host = str(os.getenv("CARBON_SDK_HOST", "carbon-aware-sdk-webapi"))
     app_url = os.getenv("CARBON_SDK_URL")
@@ -90,6 +97,23 @@ def main():
         app_url=app_url
     )
     start_http_server(exporter_port)
+    app_metrics.run_metrics_loop()
+
+
+def test():
+    print("STARTING EXPORTER")
+    polling_interval_seconds = int(os.getenv("POLLING_INTERVAL_SECONDS", "10"))
+    app_port = int(os.getenv("CARBON_SDK_PORT", "80"))
+    app_host = str(os.getenv("CARBON_SDK_HOST", "carbon-aware-sdk-webapi"))
+    app_url = os.getenv("CARBON_SDK_URL", "https://carbon-aware-api.azurewebsites.net")
+    exporter_port = int(os.getenv("EXPORTER_PORT", "9877"))
+
+    app_metrics = AppMetrics(
+        polling_interval_seconds=polling_interval_seconds,
+        app_host=app_host,
+        app_port=app_port,
+        app_url=app_url
+    )
     app_metrics.run_metrics_loop()
 
 
