@@ -24,6 +24,8 @@ services:
 #      CARBON_SDK_HOST: carbon-aware-sdk-webapi
     ports:
       - 9877:9877
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     links:
       - carbon-aware-sdk-webapi
   carbon-aware-sdk-webapi:

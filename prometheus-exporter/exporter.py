@@ -8,7 +8,7 @@ import time
 from prometheus_client import start_http_server, Gauge, Enum
 
 from carbon_emissions import CarbonEmissions
-from regions import regions
+from constants import regions
 from container_stats import get_stats
 
 
@@ -84,7 +84,7 @@ class AppMetrics:
 def main():
     """Main entry point"""
     logging.info("STARTING EXPORTER")
-    polling_interval_seconds = int(os.getenv("POLLING_INTERVAL_SECONDS", "10"))
+    polling_interval_seconds = int(os.getenv("POLLING_INTERVAL_SECONDS", "5"))
     app_port = int(os.getenv("CARBON_SDK_PORT", "80"))
     app_host = str(os.getenv("CARBON_SDK_HOST", "carbon-aware-sdk-webapi"))
     app_url = os.getenv("CARBON_SDK_URL")
@@ -102,7 +102,7 @@ def main():
 
 def test():
     print("STARTING EXPORTER")
-    polling_interval_seconds = int(os.getenv("POLLING_INTERVAL_SECONDS", "10"))
+    polling_interval_seconds = int(os.getenv("POLLING_INTERVAL_SECONDS", "1"))
     app_port = int(os.getenv("CARBON_SDK_PORT", "80"))
     app_host = str(os.getenv("CARBON_SDK_HOST", "carbon-aware-sdk-webapi"))
     app_url = os.getenv("CARBON_SDK_URL", "https://carbon-aware-api.azurewebsites.net")

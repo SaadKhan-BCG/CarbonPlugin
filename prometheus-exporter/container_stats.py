@@ -1,33 +1,40 @@
 import docker
-import time
+from constants import energy_profile
 
 
-def get_cpu_stats(docker_client, container):
+def get_container_stats(docker_client, container):
+
     stats = docker_client.containers.get(container).stats(stream=False)
-    UsageDelta = stats['cpu_stats']['cpu_usage']['total_usage'] - stats['precpu_stats']['cpu_usage']['total_usage']
-    # from informations : UsageDelta = 25382985593 - 25382168431
 
-    SystemDelta = stats['cpu_stats']['system_cpu_usage'] - stats['precpu_stats']['system_cpu_usage']
-    # from informations : SystemDelta = 75406420000000 - 75400410000000
-
+    # CPU Power
+    usage_delta = stats['cpu_stats']['cpu_usage']['total_usage'] - stats['precpu_stats']['cpu_usage']['total_usage']
+    system_delta = stats['cpu_stats']['system_cpu_usage'] - stats['precpu_stats']['system_cpu_usage']
     len_cpu = stats['cpu_stats']['online_cpus']
-    # from my informations : len_cpu = 8
+    percentage = (usage_delta / system_delta) * len_cpu * 100
+    cpu_power = percentage * len_cpu * energy_profile['PUE'] * energy_profile['CPU'] / 60
 
-    percentage = (UsageDelta / SystemDelta) * len_cpu * 100
-    # this is a little big because the result is : 0.02719341098169717
+    # Memory Power
+    mem_usage = stats['memory_stats']['usage'] / 1073741824   # Number is in bytes so divide to get to GB
+    mem_power = mem_usage * energy_profile['PUE'] * energy_profile['MEM'] / 60
 
-    PUE = 1.4  # Power Useage effectiveness
-    power = percentage * len_cpu * PUE / 60
+    # Network Power
+    total_rx = 0
+    total_tx = 0
+    for _, network in stats['networks'].items():
+        total_rx += network['rx_bytes']
+        total_tx += network['tx_bytes']
 
-    return power
+    network_power = (total_tx + total_rx)/1073741824 * energy_profile['NETWORK']/60
+    disk_power = 0  # Usually almost nothing
+
+    return cpu_power + mem_power + disk_power + network_power
 
 
 def get_stats():
     client = docker.DockerClient(base_url='unix:///var/run/docker.sock')
     stats = {}
     for containers in client.containers.list():
-        # print(containers.stats(decode=None, stream=False))
-        stats[containers.name] = get_cpu_stats(client, containers.id)
+        stats[containers.name] = get_container_stats(client, containers.id)
     return stats
 
 #
@@ -36,6 +43,6 @@ def get_stats():
 #
 #     while True:
 #         print(get_stats())
-#         time.sleep(5)
+#
 #
 # run_metrics_loop()

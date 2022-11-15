@@ -23,3 +23,11 @@ regions = [
     "westus",
     "westus2",
     "westus3"]
+
+energy_profile = {
+    'CPU': 45,
+    'MEM': 10/128,
+    'DISK': 1.52/1000,
+    'NETWORK': 11,
+    'PUE': 1.4
+}
