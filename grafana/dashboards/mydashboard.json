@@ -80,7 +80,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "sum (sum_over_time(carbon_consumption{region=~\"$region\"}[24h])/60)",
+          "expr": "sum (sum_over_time(carbon_consumption{region=~\"$region\", container_name=~\"$container_name\"}[24h])/60)",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
@@ -172,7 +172,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "sum by (region) (sum_over_time(carbon_consumption[24h])/60)",
+          "expr": "sum by (region) (sum_over_time(carbon_consumption{container_name=~\"$container_name\"}[24h])/60)",
           "format": "time_series",
           "legendFormat": "__auto",
           "range": true,
@@ -283,7 +283,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "sum by(time) (sum_over_time(carbon_consumption_time{region=~\"$region\"}[24h])) / 60",
+          "expr": "sum by(time) (sum_over_time(carbon_consumption_time{region=~\"$region\", container_name=~\"$container_name\"}[24h])) / 60",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
@@ -410,7 +410,7 @@
     "list": [
       {
         "current": {
-          "selected": false,
+          "selected": true,
           "text": "ukwest",
           "value": "ukwest"
         },
@@ -439,30 +439,10 @@
         "current": {
           "selected": true,
           "text": [
-            "co2ai-backend-1",
-            "co2ai-celery-beat-1",
-            "co2ai-frontend-1",
-            "co2ai-keycloak-1",
-            "co2ai-minio-1",
-            "co2ai-nginx-1",
-            "co2ai-pgadmin-1",
-            "co2ai-postgres-1",
-            "co2ai-redis-1",
-            "jaeger",
-            "co2ai-worker-1"
+            "All"
           ],
           "value": [
-            "co2ai-backend-1",
-            "co2ai-celery-beat-1",
-            "co2ai-frontend-1",
-            "co2ai-keycloak-1",
-            "co2ai-minio-1",
-            "co2ai-nginx-1",
-            "co2ai-pgadmin-1",
-            "co2ai-postgres-1",
-            "co2ai-redis-1",
-            "jaeger",
-            "co2ai-worker-1"
+            "$__all"
           ]
         },
         "definition": "label_values(carbon_consumption,container_name)",
