@@ -323,7 +323,6 @@
           "custom": {
             "axisCenteredZero": false,
             "axisColorMode": "text",
-            "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
             "drawStyle": "line",
@@ -368,7 +367,7 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 12,
+        "h": 13,
         "w": 13,
         "x": 0,
         "y": 8
@@ -393,8 +392,8 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "carbon_consumption{region=~\"$region\"}",
-          "legendFormat": "__auto",
+          "expr": "carbon_consumption{region=~\"$region\", container_name=~\"$container_name\"}",
+          "legendFormat": "{{ container_name }}",
           "range": true,
           "refId": "A"
         }
@@ -411,7 +410,7 @@
     "list": [
       {
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "ukwest",
           "value": "ukwest"
         },
@@ -428,6 +427,53 @@
         "options": [],
         "query": {
           "query": "label_values(carbon_consumption,region)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": [
+            "co2ai-backend-1",
+            "co2ai-celery-beat-1",
+            "co2ai-frontend-1",
+            "co2ai-keycloak-1",
+            "co2ai-minio-1",
+            "co2ai-nginx-1",
+            "co2ai-pgadmin-1",
+            "co2ai-postgres-1",
+            "co2ai-redis-1",
+            "jaeger",
+            "co2ai-worker-1"
+          ],
+          "value": [
+            "co2ai-backend-1",
+            "co2ai-celery-beat-1",
+            "co2ai-frontend-1",
+            "co2ai-keycloak-1",
+            "co2ai-minio-1",
+            "co2ai-nginx-1",
+            "co2ai-pgadmin-1",
+            "co2ai-postgres-1",
+            "co2ai-redis-1",
+            "jaeger",
+            "co2ai-worker-1"
+          ]
+        },
+        "definition": "label_values(carbon_consumption,container_name)",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Container Name",
+        "multi": true,
+        "name": "container_name",
+        "options": [],
+        "query": {
+          "query": "label_values(carbon_consumption,container_name)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 1,
