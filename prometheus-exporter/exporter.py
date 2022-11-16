@@ -18,8 +18,9 @@ class AppMetrics:
     application metrics into Prometheus metrics.
     """
 
-    def __init__(self, polling_interval_seconds, app_host, app_port, app_url=None):
+    def __init__(self, polling_interval_seconds, app_host, app_port, time_regions, app_url=None):
         self.polling_interval_seconds = polling_interval_seconds
+        self.time_regions = time_regions
         self.carbon_emissions_client = CarbonEmissions(app_host, app_port, app_url)
 
         # Prometheus metrics to collect
@@ -43,11 +44,12 @@ class AppMetrics:
         start_time = datetime.datetime.utcnow() - datetime.timedelta(days=1)
         start_time = start_time - datetime.timedelta(hours=datetime.datetime.now().hour)
 
-        for i in range(0, 23):
-            cur_time = start_time + datetime.timedelta(hours=i)
+        for i in range(0, 6):
+            time_displacement = i*4
+            cur_time = start_time + datetime.timedelta(hours=time_displacement)
             carbon = self.carbon_emissions_client.get_carbon_emissions_utc(location, cur_time)
-            self.carbon_consumption_time.labels(location, i, container).set(current_power_consumption * carbon)
-            print(f"container: {container} region: {location} carbon: {carbon} power: {current_power_consumption}")
+            self.carbon_consumption_time.labels(location, time_displacement, container).set(current_power_consumption * carbon)
+            # print(f"container: {container} region: {location} carbon: {carbon} power: {current_power_consumption}")
 
     def __fetch(self):
         """
@@ -67,10 +69,17 @@ class AppMetrics:
                 try:
                     carbon = self.carbon_emissions_client.get_current_carbon_emissions(region)
                     self.carbon_consumption.labels(region, container).set(power * carbon)
-                    # self.__set_carbon_per_date_time(region, power, container)
                 except Exception as err:  # TODO make this better exception handling
                     print(f"Failed for region: {region} due to exception: \n{err}")
                     logging.warning(f"Failed for region: {region} due to exception: \n{err}")
+
+            if self.time_regions:
+                for region in self.time_regions:
+                    try:
+                        self.__set_carbon_per_date_time(region, power, container)
+                    except Exception as err:  # TODO make this better exception handling
+                        print(f"Failed for region: {region} due to exception: \n{err}")
+                        logging.warning(f"Failed for region: {region} due to exception: \n{err}")
         print("*****************************************")
 
     def run_metrics_loop(self):
@@ -89,31 +98,16 @@ def main():
     app_host = str(os.getenv("CARBON_SDK_HOST", "carbon-aware-sdk-webapi"))
     app_url = os.getenv("CARBON_SDK_URL")
     exporter_port = int(os.getenv("EXPORTER_PORT", "9877"))
+    time_regions = (os.getenv("TIME_REGIONS")).split(", ")
 
     app_metrics = AppMetrics(
         polling_interval_seconds=polling_interval_seconds,
         app_host=app_host,
         app_port=app_port,
+        time_regions=time_regions,
         app_url=app_url
     )
     start_http_server(exporter_port)
-    app_metrics.run_metrics_loop()
-
-
-def test():
-    print("STARTING EXPORTER")
-    polling_interval_seconds = int(os.getenv("POLLING_INTERVAL_SECONDS", "1"))
-    app_port = int(os.getenv("CARBON_SDK_PORT", "80"))
-    app_host = str(os.getenv("CARBON_SDK_HOST", "carbon-aware-sdk-webapi"))
-    app_url = os.getenv("CARBON_SDK_URL", "https://carbon-aware-api.azurewebsites.net")
-    exporter_port = int(os.getenv("EXPORTER_PORT", "9877"))
-
-    app_metrics = AppMetrics(
-        polling_interval_seconds=polling_interval_seconds,
-        app_host=app_host,
-        app_port=app_port,
-        app_url=app_url
-    )
     app_metrics.run_metrics_loop()
 
 

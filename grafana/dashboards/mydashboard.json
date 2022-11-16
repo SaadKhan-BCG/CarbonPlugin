@@ -411,8 +411,8 @@
       {
         "current": {
           "selected": true,
-          "text": "ukwest",
-          "value": "ukwest"
+          "text": "uksouth",
+          "value": "uksouth"
         },
         "datasource": {
           "type": "prometheus",

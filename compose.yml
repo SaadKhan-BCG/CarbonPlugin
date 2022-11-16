@@ -11,7 +11,7 @@ services:
     volumes:
       - ./grafana/grafana.ini:/etc/grafana/grafana.ini
       - ./grafana/provisioning:/etc/grafana/provisioning
-      - ./dashboards:/var/lib/grafana/dashboards
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
     ports:
       - 3001:3001
     links:
@@ -19,6 +19,7 @@ services:
   prometheus-exporter:
     build: ./prometheus-exporter
     environment:
+      TIME_REGIONS: "uksouth, westus"
       CARBON_SDK_URL: "https://carbon-aware-api.azurewebsites.net"
 #      CARBON_SDK_PORT: 80
 #      CARBON_SDK_HOST: carbon-aware-sdk-webapi
