@@ -61,4 +61,8 @@ COMPOSE_PROJECT_NAME=carbon-plugin
 - Select the "Carbon" dashboard to see carbon data
 - Select your region using the drop-down at the top, you can also filter by Container Name using the other drop down
 
-![how-to](https://user-images.githubusercontent.com/101206684/202210342-ac5fa7d4-7169-4eb3-9c14-eb0ae6d52c15.gif)
+
+
+https://user-images.githubusercontent.com/101206684/202211297-7bda7783-8b10-4401-b14c-98d9a525e48f.mov
+
+
