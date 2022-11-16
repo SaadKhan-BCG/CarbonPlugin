@@ -34,7 +34,7 @@ def get_stats():
     client = docker.DockerClient(base_url='unix:///var/run/docker.sock')
     stats = {}
     for containers in client.containers.list():
-        if not containers.name.startswith("carbonplugin"):
+        if not containers.name.startswith("carbon-plugin"):
             stats[containers.name] = get_container_stats(client, containers.id)
     return stats
 

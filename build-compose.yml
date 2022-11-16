@@ -1,17 +1,23 @@
 version: "3.7"
 services:
   prometheus:
-    image: saadbcg/carbon-plugin-prometheus
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
       - 9090:9090
   grafana:
-    image: saadbcg/carbon-plugin-grafana
+    image: grafana/grafana:latest
+    volumes:
+      - ./grafana/grafana.ini:/etc/grafana/grafana.ini
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
     ports:
       - 3001:3001
     links:
       - prometheus
   prometheus-exporter:
-    image: saadbcg/carbon-plugin-prometheus-exporter
+    build: ./prometheus-exporter
     environment:
       TIME_REGIONS: "uksouth, westus"
       CARBON_SDK_URL: "https://carbon-aware-api.azurewebsites.net"
