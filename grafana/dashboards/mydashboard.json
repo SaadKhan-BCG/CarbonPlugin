@@ -24,7 +24,6 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 1,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -46,7 +45,7 @@
           "showLineNumbers": false,
           "showMiniMap": false
         },
-        "content": "# Carbon Monitoring Plugin\nThis Dashboard tracks the carbon use of all running docker containers with summarised metrics\nTo Start please select your region, and Container Name (can select multiple/all).\n\nDescription of each panel is given below:\n\n\n### Total Carbon Consumed\nGives the total carbon in gCo2Eq consumed by the app in selected region, containers and time range\n(Use drop down components at the top to adjust these parameters)\n\n\n### Total Carbon Consumed By Region\nSimilar to Total Carbon but shows the results for all regions ranked lowest (best) to highest\nYou can use this panel to decide which region to run your workload in based (picking the lowest is best)\n\n### Total Carbon Consumed By Time\nGives estimated carbon consumption if you were to run your application in the same region at different times\nNote \"Hour\" here repiresents the starting hour to run in e.g. 4 -> running your workload at 4am, 20 -> 8pm\n\n### Current Carbon Consumption\nLine graph plotting the current consumption of each docker container selected in specified region\n",
+        "content": "# Carbon Monitoring Plugin\nThis Dashboard tracks the carbon use of all running docker containers with summarised metrics\nTo Start please select your region, and Container Name (can select multiple/all).\n\nDescription of each panel is given below:\n\n\n### Total Carbon Consumed\nGives the total carbon in mgCo2Eq consumed by the app in selected region, containers and time range\n(Use drop down components at the top to adjust these parameters)\n\n\n### Total Carbon Consumed By Region\nSimilar to Total Carbon but shows the results for all regions ranked lowest (best) to highest\nYou can use this panel to decide which region to run your workload in based (picking the lowest is best)\n\n### Total Carbon Consumed By Time\nGives estimated carbon consumption if you were to run your application in the same region at different times\nNote \"Hour\" here repiresents the starting hour to run in e.g. 4 -> running your workload at 4am, 20 -> 8pm\n\n### Current Carbon Consumption\nLine graph plotting the current consumption of each docker container selected in specified region\n",
         "mode": "markdown"
       },
       "pluginVersion": "9.2.4",
@@ -111,7 +110,7 @@
           "refId": "A"
         }
       ],
-      "title": "Total Carbon Consumed (gCo2Eq)",
+      "title": "Total Carbon Consumed (mgCo2Eq)",
       "type": "stat"
     },
     {
@@ -165,7 +164,7 @@
             "properties": [
               {
                 "id": "displayName",
-                "value": "gCo2Eq"
+                "value": "mgCo2Eq"
               }
             ]
           }
@@ -276,7 +275,7 @@
             "properties": [
               {
                 "id": "displayName",
-                "value": "Co2Eq"
+                "value": "mgCo2Eq"
               }
             ]
           }
@@ -418,7 +417,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "carbon_consumption{region=~\"$region\", container_name=~\"$container_name\"}",
+          "expr": "carbon_consumption{region=~\"$region\", container_name=~\"$container_name\"}/60",
           "legendFormat": "{{ container_name }}",
           "range": true,
           "refId": "A"
@@ -495,13 +494,13 @@
     ]
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-1m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Carbon",
   "uid": "BgC41qD4k",
-  "version": 1,
+  "version": 4,
   "weekStart": ""
 }
