@@ -101,7 +101,8 @@ We can query the current time in different regions to get live data, and yesterd
 A possible line of improvement here would be to take multiple metrics and average them to get a more accurate estimate per time of day
 
 ### Power
-Gathering accurate power consumption data is tricky and very platform/OS specific. As a result we rely on an estimate of power consumption relying on the methodology published in GreenFrame https://github.com/marmelab/greenframe-cli/blob/main/src/model/README.md
+Gathering accurate power consumption data is tricky and very platform/OS specific. As a result we rely on an estimate of power consumption relying on the methodology published in GreenFrame https://github.com/marmelab/greenframe-cli/blob/main/src/model/README.md.
+
 To do this we gather current cpu, memory and network utilisation stats from the docker stats and convert these to power numbers using the formula given in GreenFrame.
 
 
