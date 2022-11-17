@@ -107,3 +107,15 @@ To do this we gather current cpu, memory and network utilisation stats from the 
 
 
 Note this formula is an **Estimate**, not a true measure of power. However, the true power consumption is only a scaling factor off (depending on your hardware/OS) and therefore relying on this estimate does not in any way affect the functionality of this tool as a means to compare regions, times to improve carbon consumption.
+
+#### Possible Improvements
+
+We could improve the accuracy of power collection by having multiple running modes, defaulting back to the estimator if a more accurate metric cannot be found
+- for Linux systems there is a tool called scaphandre https://github.com/hubblo-org/scaphandre which provides excellent metrics on docker container power
+  - Excellent solution, even includes a prometheus exporter itself so would integrate nicely with this plugin
+  - Includes kubernetes support
+  - Does not currently support any cloud provider (requires they implement a hypervisor that at time of writing AWS, GCP and Azure dont support)
+- Implement a Kubernetes scraper
+  - Would work very similarly to the existing docker solution but scrape kubernetes pods instead
+- Mac
+  - Apple does export some accurate power information via a tool called powermetrics. However, it's behaviour varies for m1 vs intel macs so a solution would need to be developed for both separately 
