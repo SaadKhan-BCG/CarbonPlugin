@@ -53,7 +53,7 @@ services:
 COMPOSE_PROJECT_NAME=carbon-plugin
 ```
 - run ``docker compose up``
-- Open up the dashboard at http://localhost:3001 (note chrome often has issues with!
+- Open up the dashboard at http://localhost:3001 (note chrome often has issues with
  http sites, recommend using firefox/safari if you are having issues)
   - credentials for Grafana are simply:
     - **username: admin**
