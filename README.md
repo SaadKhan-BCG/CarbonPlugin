@@ -68,3 +68,41 @@ COMPOSE_PROJECT_NAME=carbon-plugin
 https://user-images.githubusercontent.com/101206684/202211297-7bda7783-8b10-4401-b14c-98d9a525e48f.mov
 
 
+## Time Regions
+The plugin is designed to provide data on different regions around the world and times of day.
+However due to performance reasons we do not expport every combination of time/region
+If you wish to see the carbon impact of your app in a particular region at different times of day you must
+set it in the ``TIME_REGIONS`` env variable on the prometheus-exporter (see sample with uksouth and westus in this README/compose.yml)
+
+For all regions provided, you will be able to compare your app performance if it were ran at different times of day in 4 hour intervals (ie at 4am, 8am etc) via the ``Total Carbon Consumed By Time`` panel
+
+## Common Issues
+
+- Exporter is not returning any data
+  - Its possible the docker volumes are full (docker does not clean up by itself)
+  - Solution: 
+    - first try ``docker volume prune -f`` and  ``docker system prune -f``
+    - If needed also restart docker after these
+- Exporter is working but i only see some of my containers in grafana
+  - Grafana is often a little slow to grab all metrics so often waiting a few minutes and refreshing will solve it
+  - If you wish to force it to refresh: click settings (cog next to time range at the top of dashboard) -> Variables -> (select variable you wish to refresh, usually container_name) -> Run query
+
+    
+## Carbon Calculation Methodology
+Very simply, we pull carbon data from the GSF carbon-awaresdk and multiple by power consumption (estimated using docker stats) to get overall carbon consumption over time.
+
+
+### Carbon
+We are relying on the Green Software Foundation's Carbon Aware SDK https://github.com/Green-Software-Foundation/carbon-aware-sdk
+for all carbon data. This sdk takes a location and time period as input and provides a carbon metric in gCo2Eq/kwh.
+We can query the current time in different regions to get live data, and yesterday's data throughout the day to get estimates for running your app at various times
+
+
+A possible line of improvement here would be to take multiple metrics and average them to get a more accurate estimate per time of day
+
+### Power
+Gathering accurate power consumption data is tricky and very platform/OS specific. As a result we rely on an estimate of power consumption relying on the methodology published in GreenFrame https://github.com/marmelab/greenframe-cli/blob/main/src/model/README.md
+To do this we gather current cpu, memory and network utilisation stats from the docker stats and convert these to power numbers using the formula given in GreenFrame.
+
+
+Note this formula is an **Estimate**, not a true measure of power. However, the true power consumption is only a scaling factor off (depending on your hardware/OS) and therefore relying on this estimate does not in any way affect the functionality of this tool as a means to compare regions, times to improve carbon consumption.
