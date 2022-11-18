@@ -24,6 +24,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
+  "id": 1,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -73,7 +74,56 @@
             ]
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "C carbon-metrics"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Carbon"
+              },
+              {
+                "id": "unit",
+                "value": "mgCo2Eq"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "A carbon-metrics"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Metres Driven in Car"
+              },
+              {
+                "id": "unit",
+                "value": "lengthm"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "D carbon-metrics"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Minutes watched Netflix"
+              },
+              {
+                "id": "unit",
+                "value": "m"
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 11,
@@ -104,10 +154,46 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "sum (sum_over_time(carbon_consumption{region=~\"$region\", container_name=~\"$container_name\"}[24h])/60)",
+          "expr": "sum by(job) (carbon_consumption{region=~\"$region\", container_name=~\"$container_name\"}/6)",
+          "hide": true,
+          "interval": "10s",
           "legendFormat": "__auto",
           "range": true,
-          "refId": "A"
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "name": "Expression",
+            "type": "__expr__",
+            "uid": "__expr__"
+          },
+          "expression": "$C/255",
+          "hide": false,
+          "refId": "A",
+          "type": "math"
+        },
+        {
+          "datasource": {
+            "name": "Expression",
+            "type": "__expr__",
+            "uid": "__expr__"
+          },
+          "expression": "$C/917",
+          "hide": false,
+          "refId": "D",
+          "type": "math"
+        },
+        {
+          "datasource": {
+            "name": "Expression",
+            "type": "__expr__",
+            "uid": "__expr__"
+          },
+          "expression": "B",
+          "hide": false,
+          "reducer": "sum",
+          "refId": "C",
+          "type": "reduce"
         }
       ],
       "title": "Total Carbon Consumed (mgCo2Eq)",
@@ -128,6 +214,7 @@
             "displayMode": "auto",
             "inspect": false
           },
+          "displayName": "Region",
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -147,24 +234,39 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Field"
+              "options": "Max"
             },
             "properties": [
               {
                 "id": "displayName",
-                "value": "Region"
+                "value": "gCo2Eq"
               }
             ]
           },
           {
             "matcher": {
               "id": "byName",
-              "options": "Max"
+              "options": "Field"
             },
             "properties": [
               {
                 "id": "displayName",
-                "value": "mgCo2Eq"
+                "value": "Region"
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "pattern": "- (.*)",
+                      "result": {
+                        "index": 0,
+                        "text": "$1"
+                      }
+                    },
+                    "type": "regex"
+                  }
+                ]
               }
             ]
           }
@@ -196,18 +298,35 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "sum by (region) (sum_over_time(carbon_consumption{container_name=~\"$container_name\"}[24h])/60)",
-          "format": "time_series",
+          "expr": "sum by(region) (carbon_consumption{container_name=~\"$container_name\"}/6)",
+          "hide": true,
+          "interval": "10s",
           "legendFormat": "__auto",
           "range": true,
-          "refId": "A"
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "name": "Expression",
+            "type": "__expr__",
+            "uid": "__expr__"
+          },
+          "expression": "B",
+          "hide": false,
+          "reducer": "sum",
+          "refId": "-",
+          "type": "reduce"
         }
       ],
       "title": "Total Carbon Consumed By Region",
       "transformations": [
         {
           "id": "reduce",
-          "options": {}
+          "options": {
+            "reducers": [
+              "max"
+            ]
+          }
         },
         {
           "id": "sortBy",
@@ -264,6 +383,21 @@
               {
                 "id": "displayName",
                 "value": "Hour"
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "pattern": "- (.*)",
+                      "result": {
+                        "index": 0,
+                        "text": "$1"
+                      }
+                    },
+                    "type": "regex"
+                  }
+                ]
               }
             ]
           },
@@ -307,10 +441,24 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "sum by(time) (sum_over_time(carbon_consumption_time{region=~\"$region\", container_name=~\"$container_name\"}[24h])) / 60",
+          "expr": "sum by(time) (carbon_consumption_time{region=~\"$region\", container_name=~\"$container_name\"}/6)",
+          "hide": true,
+          "interval": "10s",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
+        },
+        {
+          "datasource": {
+            "name": "Expression",
+            "type": "__expr__",
+            "uid": "__expr__"
+          },
+          "expression": "A",
+          "hide": false,
+          "reducer": "sum",
+          "refId": "-",
+          "type": "reduce"
         }
       ],
       "title": "Total Carbon Consumed By Time (hour)",
@@ -417,7 +565,8 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "carbon_consumption{region=~\"$region\", container_name=~\"$container_name\"}/60",
+          "expr": "carbon_consumption{region=~\"$region\", container_name=~\"$container_name\"}/6",
+          "interval": "10s",
           "legendFormat": "{{ container_name }}",
           "range": true,
           "refId": "A"
@@ -435,9 +584,9 @@
     "list": [
       {
         "current": {
-          "selected": false,
-          "text": "uksouth",
-          "value": "uksouth"
+          "selected": true,
+          "text": "australiacentral",
+          "value": "australiacentral"
         },
         "datasource": {
           "type": "prometheus",
@@ -494,13 +643,13 @@
     ]
   },
   "time": {
-    "from": "now-1m",
+    "from": "now-1h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Carbon",
   "uid": "BgC41qD4k",
-  "version": 4,
+  "version": 3,
   "weekStart": ""
 }
