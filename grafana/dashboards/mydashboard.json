@@ -46,7 +46,7 @@
           "showLineNumbers": false,
           "showMiniMap": false
         },
-        "content": "# Carbon Monitoring Plugin\nThis Dashboard tracks the carbon use of all running docker containers with summarised metrics\nTo Start please select your region, and Container Name (can select multiple/all).\n\nDescription of each panel is given below:\n\n\n### Total Carbon Consumed\nGives the total carbon in mgCo2Eq consumed by the app in selected region, containers and time range\n(Use drop down components at the top to adjust these parameters)\n\n\n### Total Carbon Consumed By Region\nSimilar to Total Carbon but shows the results for all regions ranked lowest (best) to highest\nYou can use this panel to decide which region to run your workload in based (picking the lowest is best)\n\n### Total Carbon Consumed By Time\nGives estimated carbon consumption if you were to run your application in the same region at different times\nNote \"Hour\" here repiresents the starting hour to run in e.g. 4 -> running your workload at 4am, 20 -> 8pm\n\n### Current Carbon Consumption\nLine graph plotting the current consumption of each docker container selected in specified region\n",
+        "content": "# Carbon Monitoring Plugin\nThis Dashboard tracks the carbon use of all running docker containers with summarised metrics\nTo Start please select your region, and Container Name (can select multiple/all).\n\nDescription of each panel is given below:\n\n\n### Total Carbon Consumed\nGives the total carbon in mgCo2Eq consumed by the app in selected region, containers and time range\n(Use drop down components at the top to adjust these parameters). As a reference we compare this to the carbon impact of driving a car, or watching netflix.\n\n\n### Total Carbon Consumed By Region\nSimilar to Total Carbon but shows the results for all regions ranked lowest (best) to highest\nYou can use this panel to decide which region to run your workload in based (picking the lowest is best)\n\n### Total Carbon Consumed By Time\nGives estimated carbon consumption if you were to run your application in the same region at different times\nNote \"Hour\" here repiresents the starting hour to run in e.g. 4 -> running your workload at 4am, 20 -> 8pm\n\n### Current Carbon Consumption\nLine graph plotting the current consumption of each docker container selected in specified region\n",
         "mode": "markdown"
       },
       "pluginVersion": "9.2.4",
@@ -122,6 +122,22 @@
                 "value": "m"
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "F carbon-metrics"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Time"
+              },
+              {
+                "id": "unit",
+                "value": "m"
+              }
+            ]
           }
         ]
       },
@@ -167,6 +183,29 @@
             "type": "__expr__",
             "uid": "__expr__"
           },
+          "expression": "B",
+          "hide": false,
+          "reducer": "sum",
+          "refId": "C",
+          "type": "reduce"
+        },
+        {
+          "datasource": {
+            "name": "Expression",
+            "type": "__expr__",
+            "uid": "__expr__"
+          },
+          "expression": "$E/6",
+          "hide": false,
+          "refId": "F",
+          "type": "math"
+        },
+        {
+          "datasource": {
+            "name": "Expression",
+            "type": "__expr__",
+            "uid": "__expr__"
+          },
           "expression": "$C/255",
           "hide": false,
           "refId": "A",
@@ -190,9 +229,9 @@
             "uid": "__expr__"
           },
           "expression": "B",
-          "hide": false,
-          "reducer": "sum",
-          "refId": "C",
+          "hide": true,
+          "reducer": "count",
+          "refId": "E",
           "type": "reduce"
         }
       ],
@@ -585,8 +624,8 @@
       {
         "current": {
           "selected": true,
-          "text": "australiacentral",
-          "value": "australiacentral"
+          "text": "uksouth",
+          "value": "uksouth"
         },
         "datasource": {
           "type": "prometheus",
