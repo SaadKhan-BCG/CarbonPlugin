@@ -303,7 +303,7 @@
             "properties": [
               {
                 "id": "displayName",
-                "value": "gCo2Eq"
+                "value": "mgCo2Eq"
               }
             ]
           },
@@ -707,13 +707,13 @@
     ]
   },
   "time": {
-    "from": "now-15m",
+    "from": "now-5m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Carbon",
   "uid": "BgC41qD4k",
-  "version": 1,
+  "version": 2,
   "weekStart": ""
 }
