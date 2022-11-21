@@ -24,4 +24,18 @@ jobs:
           context: "{{defaultContext}}:prometheus"
           file: ./dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/carbon-plugin-prometheus:test
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/carbon-plugin-prometheus
+      - name: Build and push Grafana
+        uses: docker/build-push-action@v3
+        with:
+          context: "{{defaultContext}}:grafana"
+          file: ./dockerfile
+          push: true
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/carbon-plugin-grafana
+      - name: Build and push Exporter
+        uses: docker/build-push-action@v3
+        with:
+          context: "{{defaultContext}}:prometheus-exporter"
+          file: ./dockerfile
+          push: true
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/carbon-plugin-prometheus-exporter
