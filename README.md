@@ -7,8 +7,7 @@ Developers can then use this data to shift expensive tasks to regions and times 
 The Carbon Plugin works by gathering the resource use of docker containers, and combining this with the Carbon Aware SDK by the Green Software Foundation
 to produce a single dashboard plotting the total carbon of the app if it were ran at various countries and times.
 
-![image](https://user-images.githubusercontent.com/101206684/202492791-0dd17d5a-1e42-4a31-a936-d319704498c2.png)
-
+![image](https://user-images.githubusercontent.com/101206684/203093429-4ce892c2-1bd9-49e8-a13a-f713e10248f4.png)
 
 ## Requirements
 - docker
