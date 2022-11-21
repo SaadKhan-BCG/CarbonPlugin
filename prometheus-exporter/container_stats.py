@@ -1,5 +1,5 @@
 import docker
-from constants import energy_profile
+from constants import energy_profile, project_name
 
 
 def get_container_stats(docker_client, container):
@@ -35,6 +35,6 @@ def get_stats():
     client = docker.DockerClient(base_url='unix:///var/run/docker.sock')
     stats = {}
     for containers in client.containers.list():
-        if not containers.name.startswith("carbon-plugin"):
+        if not containers.name.startswith(project_name):
             stats[containers.name] = get_container_stats(client, containers.id)
     return stats

@@ -71,7 +71,6 @@ class AppMetrics:
                 carbon = self.carbon_emissions_client.get_current_carbon_emissions(region)
                 self.carbon_consumption.labels(region, container).set(power * carbon)
             except Exception as err:  # TODO make this better exception handling
-                logging.info(f"Failed for region: {region} due to exception: \n{err}")
                 logging.warning(f"Failed for region: {region} due to exception: \n{err}")
 
         if self.time_regions:
@@ -79,7 +78,6 @@ class AppMetrics:
                 try:
                     self.__set_carbon_per_date_time(region, power, container)
                 except Exception as err:  # TODO make this better exception handling
-                    logging.info(f"Failed for region: {region} due to exception: \n{err}")
                     logging.warning(f"Failed for region: {region} due to exception: \n{err}")
 
     def __fetch(self):

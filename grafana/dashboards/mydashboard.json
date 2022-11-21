@@ -34,8 +34,8 @@
         "uid": "PBFA97CFB590B2093"
       },
       "gridPos": {
-        "h": 11,
-        "w": 12,
+        "h": 7,
+        "w": 19,
         "x": 0,
         "y": 0
       },
@@ -51,6 +51,31 @@
       },
       "pluginVersion": "9.2.4",
       "title": "Carbon Monitoring",
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 0,
+        "y": 7
+      },
+      "id": 11,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "Time, Containers and Region are set using the variables at the top.\nAll values are for the specifed time range, containers and region set.\n\n\n**Carbon:** Total Carbon-eq consumed by the Containers\n\n**Time:** Total time in minutes of the specified range\n\n**Metres Driven in Car:** An average car driving this distances consumes an equivalent amount of Carbon\n\n**Minutes watched Netflix:** The carbon consumption is equivalent to streaming Netflix for this amount of time\n\n",
+        "mode": "markdown"
+      },
+      "pluginVersion": "9.2.4",
+      "title": "Total Carbon Consumed",
       "type": "text"
     },
     {
@@ -142,10 +167,10 @@
         ]
       },
       "gridPos": {
-        "h": 11,
+        "h": 6,
         "w": 7,
         "x": 12,
-        "y": 0
+        "y": 7
       },
       "id": 2,
       "options": {
@@ -312,10 +337,10 @@
         ]
       },
       "gridPos": {
-        "h": 8,
+        "h": 7,
         "w": 9,
         "x": 0,
-        "y": 11
+        "y": 13
       },
       "id": 4,
       "options": {
@@ -455,10 +480,10 @@
         ]
       },
       "gridPos": {
-        "h": 8,
+        "h": 7,
         "w": 10,
         "x": 9,
-        "y": 11
+        "y": 13
       },
       "id": 5,
       "options": {
@@ -582,7 +607,7 @@
         "h": 13,
         "w": 19,
         "x": 0,
-        "y": 19
+        "y": 20
       },
       "id": 7,
       "options": {
@@ -682,13 +707,13 @@
     ]
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-15m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Carbon",
   "uid": "BgC41qD4k",
-  "version": 3,
+  "version": 1,
   "weekStart": ""
 }

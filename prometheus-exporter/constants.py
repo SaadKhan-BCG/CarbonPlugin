@@ -31,3 +31,6 @@ energy_profile = {
     'NETWORK': 11,
     'PUE': 1.4
 }
+
+# Name of the docker project, used to filter out the plugin's own containers from stat collection
+project_name = "carbon-plugin"
