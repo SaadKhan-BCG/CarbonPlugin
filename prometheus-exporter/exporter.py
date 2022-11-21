@@ -128,7 +128,8 @@ def main():
     app_host = str(os.getenv("CARBON_SDK_HOST", "carbon-aware-sdk-webapi"))
     app_url = os.getenv("CARBON_SDK_URL")
     exporter_port = int(os.getenv("EXPORTER_PORT", "9877"))
-    time_regions = (os.getenv("TIME_REGIONS")).split(", ")
+    time_regions = os.getenv("TIME_REGIONS")
+    time_regions = time_regions.split(", ") if time_regions else []
 
     app_metrics = AppMetrics(
         polling_interval_seconds=polling_interval_seconds,
@@ -151,7 +152,8 @@ def debug():
     app_port = int(os.getenv("CARBON_SDK_PORT", "80"))
     app_host = str(os.getenv("CARBON_SDK_HOST", "carbon-aware-sdk-webapi"))
     app_url = os.getenv("CARBON_SDK_URL", "https://carbon-aware-api.azurewebsites.net")
-    time_regions = (os.getenv("TIME_REGIONS")).split(", ")
+    time_regions = os.getenv("TIME_REGIONS")
+    time_regions = time_regions.split(", ") if time_regions else []
 
     app_metrics = AppMetrics(
         polling_interval_seconds=polling_interval_seconds,

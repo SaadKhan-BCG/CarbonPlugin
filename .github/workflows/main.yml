@@ -26,6 +26,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
-          file: ./prometheus/dockerfile
+          file: ./dockerfile
+          working-directory: prometheus
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/carbon-plugin-prometheus:test
