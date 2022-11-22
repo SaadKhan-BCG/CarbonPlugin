@@ -17,7 +17,7 @@ to produce a single dashboard plotting the total carbon of the app if it were ra
 
 ### Option 1: (If you dont need to configure anything)
 Just run 
-```curl https://raw.githubusercontent.com/SaadKhan-BCG/CarbonPlugin/main/compose.yml > compose.yml | docker compose -f compose.yml -p carbon-plugin up```
+```curl https://raw.githubusercontent.com/SaadKhan-BCG/CarbonPlugin/main/compose.yml > compose.yml && docker compose -f compose.yml -p carbon-plugin up```
 
 And check 4. in Option 2 for details on the dashboard access
 
