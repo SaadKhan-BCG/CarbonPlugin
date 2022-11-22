@@ -89,6 +89,8 @@ class AppMetrics:
         logging.info("FETCHING DATA")
         current_power_consumption = get_stats()
         logging.info("*****************************************")
+        self.carbon_emissions_client.clear_carbon_cache()
+
         for container, power in current_power_consumption.items():
             self.__set_carbon_per_container(container, power)
         logging.info("*****************************************")

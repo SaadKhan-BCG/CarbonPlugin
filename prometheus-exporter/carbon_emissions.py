@@ -9,6 +9,10 @@ class CarbonEmissions:
     def __init__(self, app_host, app_port, app_url=None):
         self.baseurl = app_url if app_url else f"http://{app_host}:{app_port}"
 
+        # Local dict cache to store carbon values and prevent multiple lookups
+        self.region_carbon = {}
+        self.region_time_carbon = {}
+
     def __get_carbon_emissions(self, location, prev_time, to_time):
         """
         Internal method to actually query the Carbon SDK for emissions data
@@ -31,12 +35,28 @@ class CarbonEmissions:
         :param utc_time: python date object in utc time you want the carbon data at
         :return: Carbon consumption at given time and region in gCO2eq/watt
         """
-        url_time = quote(utc_time.strftime("%Y-%m-%dT%H:%M"))
-        prev_time = utc_time - datetime.timedelta(minutes=1)
-        prev_url_time = quote(prev_time.strftime("%Y-%m-%dT%H:%M"))
 
-        return self.__get_carbon_emissions(location, prev_url_time, url_time)
+        hour = utc_time.hour
+        carbon = self.region_carbon.get((location, hour))
+
+        if not carbon:
+            url_time = quote(utc_time.strftime("%Y-%m-%dT%H:%M"))
+            prev_time = utc_time - datetime.timedelta(minutes=1)
+            prev_url_time = quote(prev_time.strftime("%Y-%m-%dT%H:%M"))
+
+            carbon = self.__get_carbon_emissions(location, prev_url_time, url_time)
+            self.region_carbon[(location, hour)] = carbon
+        return carbon
 
     def get_current_carbon_emissions(self, location):
-        current_time = datetime.datetime.utcnow()
-        return self.get_carbon_emissions_utc(location, current_time)
+        carbon = self.region_carbon.get(location)
+        if not carbon:
+            current_time = datetime.datetime.utcnow()
+            carbon = self.get_carbon_emissions_utc(location, current_time)
+            self.region_carbon[location] = carbon
+        return carbon
+
+    # Empty local cache, used at start of every new refresh
+    def clear_carbon_cache(self):
+        self.region_carbon = {}
+        self.region_time_carbon = {}
