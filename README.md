@@ -19,8 +19,10 @@ to produce a single dashboard plotting the total carbon of the app if it were ra
 Just run 
 ```curl https://raw.githubusercontent.com/SaadKhan-BCG/CarbonPlugin/main/compose.yml > compose.yml | docker compose -f compose.yml -p carbon-plugin up```
 
+And check 4. in Option 2 for details on the dashboard access
+
 ### Option 2: (allows you to configure env variables etc yourself)
-- Clone this repo or just use the compose file (also included as compose.yml in the repo):
+1. Clone this repo or just use the compose file (also included as compose.yml in the repo):
 
  ```
  version: "3.7"
@@ -55,18 +57,18 @@ services:
     ports:
       - 8080:80
  ```
-- create a .env file in the same directory with the following:
+2. create a .env file in the same directory with the following:
 ```
 COMPOSE_PROJECT_NAME=carbon-plugin
 ```
-- run ``docker compose up``
-- Open up the dashboard at http://localhost:3001 (note chrome often has issues with
+3. run ``docker compose up``
+4. Open up the dashboard at http://localhost:3001 (note chrome often has issues with
  http sites, recommend using firefox/safari if you are having issues)
-  - credentials for Grafana are simply:
-    - **username: admin**
-    - **password: admin**
-- Select the "Carbon" dashboard to see carbon data
-- Select your region using the drop-down at the top, you can also filter by Container Name using the other drop down
+    - credentials for Grafana are simply:
+      - **username: admin**
+      - **password: admin**
+    - Select the "Carbon" dashboard to see carbon data
+    - Select your region using the drop-down at the top, you can also filter by Container Name using the other drop down
 
 
 
