@@ -49,7 +49,7 @@
         "content": "# Carbon Monitoring Plugin\nThis Dashboard tracks the carbon use of all running docker containers with summarised metrics\nTo Start please select your region, and Container Name (can select multiple/all).\n\nDescription of each panel is given below:\n\n\n### Total Carbon Consumed\nGives the total carbon in mgCo2Eq consumed by the app in selected region, containers and time range\n(Use drop down components at the top to adjust these parameters). As a reference we compare this to the carbon impact of driving a car, or watching netflix.\n\n\n### Total Carbon Consumed By Region\nSimilar to Total Carbon but shows the results for all regions ranked lowest (best) to highest\nYou can use this panel to decide which region to run your workload in based (picking the lowest is best)\n\n### Total Carbon Consumed By Time\nGives estimated carbon consumption if you were to run your application in the same region at different times\nNote \"Hour\" here repiresents the starting hour to run in e.g. 4 -> running your workload at 4am, 20 -> 8pm\n\n### Current Carbon Consumption\nLine graph plotting the current consumption of each docker container selected in specified region\n",
         "mode": "markdown"
       },
-      "pluginVersion": "9.2.4",
+      "pluginVersion": "9.2.5",
       "title": "Carbon Monitoring",
       "type": "text"
     },
@@ -74,7 +74,7 @@
         "content": "Time, Containers and Region are set using the variables at the top.\nAll values are for the specifed time range, containers and region set.\n\n\n**Carbon:** Total Carbon-eq consumed by the Containers\n\n**Time:** Total time in minutes of the specified range\n\n**Metres Driven in Car:** An average car driving this distances consumes an equivalent amount of Carbon\n\n**Minutes watched Netflix:** The carbon consumption is equivalent to streaming Netflix for this amount of time\n\n",
         "mode": "markdown"
       },
-      "pluginVersion": "9.2.4",
+      "pluginVersion": "9.2.5",
       "title": "Total Carbon Consumed",
       "type": "text"
     },
@@ -144,7 +144,7 @@
               },
               {
                 "id": "unit",
-                "value": "m"
+                "value": "s"
               }
             ]
           },
@@ -187,7 +187,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "9.2.4",
+      "pluginVersion": "9.2.5",
       "targets": [
         {
           "datasource": {
@@ -242,7 +242,7 @@
             "type": "__expr__",
             "uid": "__expr__"
           },
-          "expression": "$C/917",
+          "expression": "$C/917*60",
           "hide": false,
           "refId": "D",
           "type": "math"
@@ -354,7 +354,7 @@
         "showHeader": true,
         "sortBy": []
       },
-      "pluginVersion": "9.2.4",
+      "pluginVersion": "9.2.5",
       "targets": [
         {
           "datasource": {
@@ -497,7 +497,7 @@
         "showHeader": true,
         "sortBy": []
       },
-      "pluginVersion": "9.2.4",
+      "pluginVersion": "9.2.5",
       "targets": [
         {
           "datasource": {
