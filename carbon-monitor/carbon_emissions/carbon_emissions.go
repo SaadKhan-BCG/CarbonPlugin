@@ -40,7 +40,6 @@ func getCarbonEmissions(location string, prevTime string, toTime string) (float6
 	if err != nil {
 		panic(err.Error())
 	}
-	fmt.Printf("Results: %v\n", data)
 	return data[0].Rating, nil
 }
 

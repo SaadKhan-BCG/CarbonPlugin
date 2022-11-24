@@ -71,16 +71,12 @@ func GetSingleContainerStat(cli *client.Client, containerID string, containerNam
 	}
 
 	totalPower := GetCpuPower(&data) + GetMemoryPower(&data) + GetNetworkPower(&data)
-	log.Info(fmt.Sprintf("Container: %s Power: %f", containerName, totalPower))
+	log.Debug(fmt.Sprintf("Container: %s Power: %f", containerName, totalPower))
 	containerPower[containerName] = totalPower
 	return true, nil
 }
 
-func GetDockerStats() map[string]float64 {
-	cli, err := client.NewEnvClient()
-	if err != nil {
-		log.Fatal(err)
-	}
+func GetDockerStats(cli *client.Client, containerPower map[string]float64) map[string]float64 {
 
 	containers, err := cli.ContainerList(context.Background(), types.ContainerListOptions{
 		All: false,
@@ -88,8 +84,6 @@ func GetDockerStats() map[string]float64 {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	containerPower := make(map[string]float64)
 
 	containerLen := len(containers)
 	var wg sync.WaitGroup
