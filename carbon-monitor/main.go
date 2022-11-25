@@ -14,6 +14,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// TODO put this somewhere better, ideally make it configurable via cli ie allow a --all option/ commar separated list of ones you care about
 var regions = []string{
 	"australiacentral",
 	"australiacentral2",
