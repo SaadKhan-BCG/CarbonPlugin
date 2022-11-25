@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"sync"
 	"time"
@@ -34,11 +35,15 @@ var regions = []string{
 	"westus2",
 	"westus3",
 }
+var mutex = &sync.Mutex{}
 
 func ComputeCarbonConsumption(containerCarbon map[ContainerRegion]float64, container string, power float64, location string, wg *sync.WaitGroup) {
 	defer wg.Done()
 	carbon, _ := carbon_emissions.GetCurrentCarbonEmissions(location)
-	containerCarbon[ContainerRegion{container, location}] = power * carbon
+	carbonConsumed := power * carbon * 10 / 36 // Carbon is in gCo2/H converting here to mgCo2/S
+	mutex.Lock()
+	containerCarbon[ContainerRegion{container, location}] = carbonConsumed
+	mutex.Unlock()
 }
 
 var regionCount = len(regions)
@@ -56,9 +61,14 @@ func fetch() {
 
 	containerPower := make(map[string]float64)
 	containerCarbon := make(map[ContainerRegion]float64)
+	totalCarbon := make(map[string]float64)
+	curTime := time.Now()
+	prevTime := time.Now()
+	diff := 0.0
 
 	for {
-		log.Info(container_stats.GetDockerStats(cli, containerPower))
+		container_stats.GetDockerStats(cli, containerPower)
+		log.Debug(containerPower)
 		for container := range containerPower {
 			log.Debug(containerPower[container])
 			var wg sync.WaitGroup
@@ -68,7 +78,23 @@ func fetch() {
 			}
 			wg.Wait()
 		}
-		log.Info(containerCarbon)
+		log.Debug(containerCarbon)
+
+		curTime = time.Now()
+		diff = curTime.Sub(prevTime).Seconds()
+		prevTime = time.Now()
+		log.Debug(fmt.Sprintf("Time taken for iteration: %f Seconds", diff))
+		for _, region := range regions {
+			for container := range containerPower {
+				totalCarbon[region] += containerCarbon[ContainerRegion{container, region}] * diff
+			}
+		}
+
+		log.Info(totalCarbon)
+
+		// Empty the maps at the end of every iteration to prevent old reports staying
+		containerPower = make(map[string]float64)
+		containerCarbon = make(map[ContainerRegion]float64)
 	}
 }
 

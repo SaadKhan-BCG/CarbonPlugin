@@ -13,6 +13,7 @@ import (
 var BaseUrl string
 
 // TODO Use this cache to reduce external queries
+
 var CarbonRegionCache map[string]float64
 var CarbonRegionTimeCache map[string]float64
 

@@ -76,7 +76,7 @@ func GetSingleContainerStat(cli *client.Client, containerID string, containerNam
 	return true, nil
 }
 
-func GetDockerStats(cli *client.Client, containerPower map[string]float64) map[string]float64 {
+func GetDockerStats(cli *client.Client, containerPower map[string]float64) {
 
 	containers, err := cli.ContainerList(context.Background(), types.ContainerListOptions{
 		All: false,
@@ -99,5 +99,4 @@ func GetDockerStats(cli *client.Client, containerPower map[string]float64) map[s
 		)
 	}
 	wg.Wait()
-	return containerPower
 }
