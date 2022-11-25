@@ -53,13 +53,14 @@ func GetNetworkPower(stats *types.StatsJSON) float64 {
 	return networkPower
 }
 
-func GetSingleContainerStat(cli *client.Client, containerID string, containerName string, containerPower map[string]float64, wg *sync.WaitGroup) (bool, error) {
+func GetSingleContainerStat(cli *client.Client, containerID string, containerName string, containerPower map[string]float64, wg *sync.WaitGroup) bool {
 	defer wg.Done()
 
 	stats, err := cli.ContainerStats(context.Background(), containerID, false)
 
 	if err != nil {
-		return false, err
+		error_handler.StdErrorHandler(fmt.Sprintf("Failure fetching docker metrics for Container: %s", containerName), err)
+		return false
 	}
 
 	defer stats.Body.Close()
@@ -67,13 +68,14 @@ func GetSingleContainerStat(cli *client.Client, containerID string, containerNam
 	data := types.StatsJSON{}
 	err = json.NewDecoder(stats.Body).Decode(&data)
 	if err != nil {
-		return false, err
+		error_handler.StdErrorHandler(fmt.Sprintf("Failure decoding stats json for Container: %s", containerName), err)
+		return false
 	}
 
 	totalPower := GetCpuPower(&data) + GetMemoryPower(&data) + GetNetworkPower(&data)
 	log.Debug(fmt.Sprintf("Container: %s Power: %f", containerName, totalPower))
 	containerPower[containerName] = totalPower
-	return true, nil
+	return true
 }
 
 func GetDockerStats(cli *client.Client, containerPower map[string]float64) {
@@ -82,21 +84,22 @@ func GetDockerStats(cli *client.Client, containerPower map[string]float64) {
 		All: false,
 	})
 	if err != nil {
-		log.Fatal(err)
+		error_handler.StdErrorHandler("Failure Listing Docker Containers", err)
+	} else {
+		containerLen := len(containers)
+		var wg sync.WaitGroup
+		wg.Add(containerLen)
+
+		for _, container := range containers {
+			go GetSingleContainerStat(
+				cli,
+				container.ID,
+				container.Names[0],
+				containerPower,
+				&wg,
+			)
+		}
+		wg.Wait()
 	}
 
-	containerLen := len(containers)
-	var wg sync.WaitGroup
-	wg.Add(containerLen)
-
-	for _, container := range containers {
-		go GetSingleContainerStat(
-			cli,
-			container.ID,
-			container.Names[0],
-			containerPower,
-			&wg,
-		)
-	}
-	wg.Wait()
 }

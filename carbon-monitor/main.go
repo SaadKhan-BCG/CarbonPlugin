@@ -8,6 +8,7 @@ import (
 
 	"carbon-monitor/carbon_emissions"
 	"carbon-monitor/container_stats"
+	"carbon-monitor/error_handler"
 
 	"github.com/docker/docker/client"
 	log "github.com/sirupsen/logrus"
@@ -35,15 +36,24 @@ var regions = []string{
 	"westus2",
 	"westus3",
 }
+
+// TODO read from env var?
+var delay = time.Second * 0
+
 var mutex = &sync.Mutex{}
 
 func ComputeCarbonConsumption(containerCarbon map[ContainerRegion]float64, container string, power float64, location string, wg *sync.WaitGroup) {
 	defer wg.Done()
-	carbon, _ := carbon_emissions.GetCurrentCarbonEmissions(location)
-	carbonConsumed := power * carbon * 10 / 36 // Carbon is in gCo2/H converting here to mgCo2/S
-	mutex.Lock()
-	containerCarbon[ContainerRegion{container, location}] = carbonConsumed
-	mutex.Unlock()
+	carbon, err := carbon_emissions.GetCurrentCarbonEmissions(location)
+	if err != nil {
+		error_handler.StdErrorHandler(fmt.Sprintf("Failed to compute carbon for Container: %s Region: %s as could not get Carbon data", container, location), err)
+	} else {
+		carbonConsumed := power * carbon * 10 / 216 // Carbon is in gCo2/H converting here to mgCo2/S
+		log.Debug(fmt.Sprintf("Location: %s Rating: %f Power: %f", location, carbon, power))
+		mutex.Lock() // Map write operations are not thread safe and this function is called in parallel
+		containerCarbon[ContainerRegion{container, location}] = carbonConsumed
+		mutex.Unlock()
+	}
 }
 
 var regionCount = len(regions)
@@ -56,18 +66,24 @@ type ContainerRegion struct {
 func fetch() {
 	cli, err := client.NewEnvClient()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Failed to Initialise Docker Client", err)
 	}
 
+	// TODO Improve this, storing far too many maps can be refactored
 	containerPower := make(map[string]float64)
 	containerCarbon := make(map[ContainerRegion]float64)
 	totalCarbon := make(map[string]float64)
+	startTime := time.Now()
 	curTime := time.Now()
 	prevTime := time.Now()
 	diff := 0.0
 
 	for {
+		time.Sleep(delay)
+
 		container_stats.GetDockerStats(cli, containerPower)
+		carbon_emissions.RefreshCarbonCache()
+
 		log.Debug(containerPower)
 		for container := range containerPower {
 			log.Debug(containerPower[container])
@@ -84,12 +100,13 @@ func fetch() {
 		diff = curTime.Sub(prevTime).Seconds()
 		prevTime = time.Now()
 		log.Debug(fmt.Sprintf("Time taken for iteration: %f Seconds", diff))
+		log.Info(fmt.Sprintf("Total Time Spend: %f Seconds", curTime.Sub(startTime).Seconds()))
 		for _, region := range regions {
 			for container := range containerPower {
 				totalCarbon[region] += containerCarbon[ContainerRegion{container, region}] * diff
 			}
 		}
-
+		// TODO improve logging to be more readable
 		log.Info(totalCarbon)
 
 		// Empty the maps at the end of every iteration to prevent old reports staying
@@ -103,8 +120,6 @@ func main() {
 
 	os.Setenv("CARBON_SDK_URL", "https://carbon-aware-api.azurewebsites.net")
 	carbon_emissions.LoadSettings()
-
-	carbon_emissions.GetCarbonEmissionsByTime("uksouth", time.Now())
 
 	fetch()
 }

@@ -1,0 +1,9 @@
+# TODO make it work
+FROM golang
+
+WORKDIR /go
+
+
+COPY carbon-monitor /go
+
+ENTRYPOINT ["go", "run", "carbon-monitor/*.go"]
