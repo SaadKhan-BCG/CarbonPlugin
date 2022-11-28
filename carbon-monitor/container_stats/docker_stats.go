@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	error_handler "github.com/SaadKhan-BCG/CarbonPlugin/carbon-monitor/error_handler"
+	errorhandler "github.com/SaadKhan-BCG/CarbonPlugin/carbon-monitor/error_handler"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
 	log "github.com/sirupsen/logrus"
@@ -60,7 +60,7 @@ func GetSingleContainerStat(cli *client.Client, containerID string, containerNam
 	stats, err := cli.ContainerStats(context.Background(), containerID, false)
 
 	if err != nil {
-		error_handler.StdErrorHandler(fmt.Sprintf("Failure fetching docker metrics for Container: %s", containerName), err)
+		errorhandler.StdErrorHandler(fmt.Sprintf("Failure fetching docker metrics for Container: %s", containerName), err)
 		return false
 	}
 
@@ -69,7 +69,7 @@ func GetSingleContainerStat(cli *client.Client, containerID string, containerNam
 	data := types.StatsJSON{}
 	err = json.NewDecoder(stats.Body).Decode(&data)
 	if err != nil {
-		error_handler.StdErrorHandler(fmt.Sprintf("Failure decoding stats json for Container: %s", containerName), err)
+		errorhandler.StdErrorHandler(fmt.Sprintf("Failure decoding stats json for Container: %s", containerName), err)
 		return false
 	}
 
@@ -85,7 +85,7 @@ func GetDockerStats(cli *client.Client, containerPower map[string]float64) {
 		All: false,
 	})
 	if err != nil {
-		error_handler.StdErrorHandler("Failure Listing Docker Containers", err)
+		errorhandler.StdErrorHandler("Failure Listing Docker Containers", err)
 	} else {
 		containerLen := len(containers)
 		var wg sync.WaitGroup

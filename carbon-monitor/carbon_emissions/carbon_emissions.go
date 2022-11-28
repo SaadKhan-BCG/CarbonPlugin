@@ -10,7 +10,7 @@ import (
 	"sync"
 	"time"
 
-	error_handler "github.com/SaadKhan-BCG/CarbonPlugin/carbon-monitor/error_handler"
+	errorhandler "github.com/SaadKhan-BCG/CarbonPlugin/carbon-monitor/error_handler"
 )
 
 var baseUrl string
@@ -51,7 +51,7 @@ func formatTimeAsString(time time.Time) string {
 	return time.Format("2006-01-02T15:04")
 }
 
-func getCarbonEmissionsByTime(location string, utcTime time.Time) (float64, error) {
+func GetCarbonEmissionsByTime(location string, utcTime time.Time) (float64, error) {
 	toTime := formatTimeAsString(utcTime)
 	prevTime := formatTimeAsString(utcTime.Add(-time.Minute))
 
@@ -68,9 +68,9 @@ func getCarbonEmissionsByTime(location string, utcTime time.Time) (float64, erro
 }
 
 func GetCurrentCarbonEmissions(location string) (float64, error) {
-	rating, err := getCarbonEmissionsByTime(location, time.Now())
+	rating, err := GetCarbonEmissionsByTime(location, time.Now())
 	if err != nil {
-		error_handler.StdErrorHandler(fmt.Sprintf("Failure fetching emission data for Region: %s", location), err)
+		errorhandler.StdErrorHandler(fmt.Sprintf("Failure fetching emission data for Region: %s", location), err)
 		return 0, err
 	} else {
 		log.Debug(fmt.Sprintf("Location: %s Rating: %f", location, rating))
