@@ -14,6 +14,7 @@ require (
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/gosuri/uilive v0.0.4 // indirect
+	github.com/guptarohit/asciigraph v0.5.5 // indirect
 	github.com/mattn/go-isatty v0.0.16 // indirect
 	github.com/moby/term v0.0.0-20221120202655-abb19827d345 // indirect
 	github.com/morikuni/aec v1.0.0 // indirect

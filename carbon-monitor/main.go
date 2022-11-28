@@ -53,8 +53,9 @@ type ContainerRegion struct {
 
 func main() {
 	//defaultRegions = []string{"ukwest", "uksouth", "australiacentral"}
-	RegionMode(&defaultRegions)
+	//RegionMode(&[]string{"ukwest"})
 	//TimeMode("uksouth")
+	graphMode("uksouth")
 }
 
 func RegionMode(regions *[]string) {
@@ -74,6 +75,14 @@ func TimeMode(region string) {
 
 	SetLocation(region)
 	OutputTotalCarbon("Hour", &timeZones, ComputeCarbonConsumptionByTime)
+}
+
+func graphMode(region string) {
+	log.SetLevel(log.ErrorLevel)
+
+	os.Setenv("CARBON_SDK_URL", "https://carbon-aware-api.azurewebsites.net")
+	carbonemissions.LoadSettings()
+	asciPlot(region)
 }
 
 /*
@@ -126,6 +135,7 @@ func OutputTotalCarbon(iterableName string, iterable *[]string, computeFn func(m
 		prevTime = time.Now()
 		log.Debug(fmt.Sprintf("Time taken for iteration: %f Seconds", diff))
 		log.Info(fmt.Sprintf("Total Time Spend: %f Seconds", curTime.Sub(startTime).Seconds()))
+
 		for _, item := range *iterable {
 			for container := range containerPower {
 				totalCarbon[item] += containerCarbon[ContainerRegion{container, item}] * diff
