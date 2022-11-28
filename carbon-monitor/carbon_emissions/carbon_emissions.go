@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"sync"
 	"time"
 
 	"carbon-monitor/error_handler"
@@ -16,6 +17,8 @@ var baseUrl string
 
 var carbonRegionCache map[string]float64
 var carbonRegionTimeCache map[string]float64 // TODO Start using time cache too
+
+var mutex = &sync.Mutex{}
 
 type carbonAwareResponse struct {
 	Rating   float64     `json:"rating"`
@@ -57,7 +60,9 @@ func getCarbonEmissionsByTime(location string, utcTime time.Time) (float64, erro
 		return rating, nil
 	} else {
 		rating, _ = getCarbonEmissions(location, prevTime, toTime)
+		mutex.Lock()
 		carbonRegionCache[location] = rating
+		mutex.Unlock()
 	}
 	return rating, nil
 }

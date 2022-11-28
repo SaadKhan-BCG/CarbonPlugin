@@ -11,6 +11,7 @@ import (
 	"carbon-monitor/error_handler"
 
 	"github.com/docker/docker/client"
+	"github.com/gosuri/uilive"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -79,6 +80,9 @@ func fetch() {
 	prevTime := time.Now()
 	diff := 0.0
 
+	writer := uilive.New()
+	writer.Start()
+
 	for {
 		time.Sleep(delay)
 
@@ -107,17 +111,27 @@ func fetch() {
 				totalCarbon[region] += containerCarbon[ContainerRegion{container, region}] * diff
 			}
 		}
-		// TODO improve logging to be more readable
+
+		// Note, Live logging requires the loglevel be set to error as info logging gets in the way
+		outputLiveConsumption(writer, totalCarbon)
 		log.Info(totalCarbon)
 
 		// Empty the maps at the end of every iteration to prevent old reports staying
 		containerPower = make(map[string]float64)
 		containerCarbon = make(map[ContainerRegion]float64)
 	}
+
+	writer.Stop()
+}
+
+func outputLiveConsumption(writer *uilive.Writer, totalCarbon map[string]float64) {
+	for _, region := range regions {
+		_, _ = fmt.Fprintf(writer, "Region: %s Carbon Consume: %f\n", region, totalCarbon[region])
+	}
 }
 
 func main() {
-	log.SetLevel(log.InfoLevel)
+	log.SetLevel(log.ErrorLevel)
 
 	os.Setenv("CARBON_SDK_URL", "https://carbon-aware-api.azurewebsites.net")
 	carbon_emissions.LoadSettings()

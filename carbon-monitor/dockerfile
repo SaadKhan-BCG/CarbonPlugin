@@ -1,4 +1,8 @@
 # TODO make it work
+# Currently doing (in this dir)
+# docker run -it -v /var/run/docker.sock:/var/run/docker.sock --mount src=`pwd`,target=/go,type=bind golang bash
+# And then cd carbon-monitor and go run main.go
+
 FROM golang
 
 WORKDIR /go
