@@ -6,9 +6,9 @@ import (
 	"sync"
 	"time"
 
-	"carbon-monitor/carbon_emissions"
-	"carbon-monitor/container_stats"
-	"carbon-monitor/error_handler"
+	carbon_emissions "github.com/SaadKhan-BCG/CarbonPlugin/carbon-monitor/carbon_emissions"
+	container_stats "github.com/SaadKhan-BCG/CarbonPlugin/carbon-monitor/container_stats"
+	error_handler "github.com/SaadKhan-BCG/CarbonPlugin/carbon-monitor/error_handler"
 
 	"github.com/docker/docker/client"
 	"github.com/gosuri/uilive"

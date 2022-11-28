@@ -10,7 +10,7 @@ import (
 	"sync"
 	"time"
 
-	"carbon-monitor/error_handler"
+	error_handler "github.com/SaadKhan-BCG/CarbonPlugin/carbon-monitor/error_handler"
 )
 
 var baseUrl string

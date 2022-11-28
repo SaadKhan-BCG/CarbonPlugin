@@ -1,10 +1,10 @@
 package container_stats
 
 import (
-	"carbon-monitor/error_handler"
 	"context"
 	"encoding/json"
 	"fmt"
+	error_handler "github.com/SaadKhan-BCG/CarbonPlugin/carbon-monitor/error_handler"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
 	log "github.com/sirupsen/logrus"

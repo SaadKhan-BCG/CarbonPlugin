@@ -1,4 +1,4 @@
-module carbon-monitor
+module github.com/SaadKhan-BCG/CarbonPlugin/carbon-monitor
 
 go 1.19
 
