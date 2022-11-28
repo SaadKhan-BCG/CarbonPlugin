@@ -9,19 +9,30 @@ import (
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
 	"github.com/gosuri/uilive"
-	"github.com/guptarohit/asciigraph"
+	ag "github.com/guptarohit/asciigraph"
 	"github.com/sirupsen/logrus"
 	"time"
 )
 
-var colours = asciigraph.SeriesColors(
-	asciigraph.Red,
-	asciigraph.Yellow,
-	asciigraph.Green,
-	asciigraph.Blue,
-	asciigraph.Purple)
+// TODO MORE COLOURS!!!! AT LEAST 10
+var colours = ag.SeriesColors(
+	ag.Red,
+	ag.Yellow,
+	ag.Green,
+	ag.Blue,
+	ag.Purple,
+	ag.Red,
+	ag.Yellow,
+	ag.Green,
+	ag.Blue,
+	ag.Purple)
 
 var colourNames = []string{
+	"Red",
+	"Yellow",
+	"Green",
+	"Blue",
+	"Purple",
 	"Red",
 	"Yellow",
 	"Green",
@@ -32,6 +43,11 @@ var colourNames = []string{
 // Warning Ansi colours are not a standard format so there is no guarantee this will work everywhere
 // Please rely on the colourNames as source of truth
 var ansiColours = []string{
+	"\033[31m", // Red
+	"\033[33m", // Yellow
+	"\033[32m", // Green
+	"\033[34m", // Blue
+	"\033[35m", // Purple
 	"\033[31m", // Red
 	"\033[33m", // Yellow
 	"\033[32m", // Green
@@ -65,7 +81,7 @@ func asciPlot(region string) {
 		fmt.Print(ansiColour, legend)
 
 	}
-	fmt.Println(ansiDefault) // Reset colour
+	fmt.Println(ansiDefault, "Live Carbon Consumption by Container: ") // Reset colour
 
 	if err != nil {
 		logrus.Fatal("Failed to Initialise Docker Client", err)
@@ -95,7 +111,13 @@ func asciPlot(region string) {
 				graphData[index] = append(graphData[index], carbonConsumed)
 			}
 		}
-		graph := asciigraph.PlotMany(graphData, asciigraph.Precision(0), asciigraph.Height(10), asciigraph.Width(30), colours)
+
+		graph := ag.PlotMany(
+			graphData,
+			ag.Precision(0),
+			ag.Height(10),
+			ag.Width(30),
+			colours)
 
 		fmt.Fprintln(writer, graph)
 
