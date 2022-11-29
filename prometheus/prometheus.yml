@@ -28,4 +28,4 @@ scrape_configs:
   scheme: http
   static_configs:
   - targets:
-    - prometheus-exporter:9877
+    - host.docker.internal:2112
