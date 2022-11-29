@@ -16,8 +16,8 @@ import (
 
 var baseUrl string
 
+// Map[region, emission rating] local cache to reduce network i/o
 var carbonRegionCache map[string]float64
-var carbonRegionTimeCache map[string]float64 // TODO Start using time cache too
 
 var mutex = &sync.Mutex{}
 
@@ -101,7 +101,6 @@ func GetCurrentCarbonEmissions(location string) (float64, error) {
 
 func RefreshCarbonCache() {
 	carbonRegionCache = make(map[string]float64)
-	carbonRegionTimeCache = make(map[string]float64)
 }
 
 func LoadSettings() {

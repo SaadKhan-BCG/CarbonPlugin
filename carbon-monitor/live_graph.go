@@ -14,7 +14,6 @@ import (
 	"time"
 )
 
-// TODO MORE COLOURS!!!! AT LEAST 10
 var colours = ag.SeriesColors(
 	ag.Red,
 	ag.Yellow,

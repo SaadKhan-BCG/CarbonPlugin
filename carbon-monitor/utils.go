@@ -6,7 +6,7 @@ import (
 	"github.com/SaadKhan-BCG/CarbonPlugin/carbon-monitor/container_stats"
 	"github.com/docker/docker/client"
 	"github.com/gosuri/uilive"
-	"github.com/sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 	"sync"
 	"time"
 )
@@ -31,12 +31,11 @@ func outputLiveConsumption(writer *uilive.Writer, totalCarbon map[string]float64
 func OutputTotalCarbon(iterableName string, iterable *[]string, computeFn func(map[ContainerRegion]float64, string, float64, string, *sync.WaitGroup)) {
 	cli, err := client.NewEnvClient()
 	if err != nil {
-		logrus.Fatal("Failed to Initialise Docker Client", err)
+		log.Fatal("Failed to Initialise Docker Client", err)
 	}
 
 	wgCount = len(*iterable)
 
-	// TODO Improve this, storing far too many maps can be refactored
 	containerPower := make(map[string]float64)
 	containerCarbon := make(map[ContainerRegion]float64)
 	totalCarbon := make(map[string]float64)
@@ -55,9 +54,9 @@ func OutputTotalCarbon(iterableName string, iterable *[]string, computeFn func(m
 		container_stats.GetDockerStats(cli, containerPower)
 		carbon_emissions.RefreshCarbonCache()
 
-		logrus.Debug(containerPower)
+		log.Debug(containerPower)
 		for container := range containerPower {
-			logrus.Debug(containerPower[container])
+			log.Debug(containerPower[container])
 			var wg sync.WaitGroup
 			wg.Add(wgCount)
 			for _, item := range *iterable {
@@ -65,13 +64,13 @@ func OutputTotalCarbon(iterableName string, iterable *[]string, computeFn func(m
 			}
 			wg.Wait()
 		}
-		logrus.Debug(containerCarbon)
+		log.Debug(containerCarbon)
 
 		curTime = time.Now()
 		diff = curTime.Sub(prevTime).Seconds()
 		prevTime = time.Now()
-		logrus.Debug(fmt.Sprintf("Time taken for iteration: %f Seconds", diff))
-		logrus.Info(fmt.Sprintf("Total Time Spend: %f Seconds", curTime.Sub(startTime).Seconds()))
+		log.Debug(fmt.Sprintf("Time taken for iteration: %f Seconds", diff))
+		log.Info(fmt.Sprintf("Total Time Spend: %f Seconds", curTime.Sub(startTime).Seconds()))
 
 		for _, item := range *iterable {
 			for container := range containerPower {
@@ -81,7 +80,7 @@ func OutputTotalCarbon(iterableName string, iterable *[]string, computeFn func(m
 
 		// Note, Live logging requires the loglevel be set to error as info logging gets in the way
 		outputLiveConsumption(writer, totalCarbon, iterable, iterableName)
-		logrus.Info(totalCarbon)
+		log.Info(totalCarbon)
 
 		// Empty the maps at the end of every iteration to prevent old reports staying
 		containerPower = make(map[string]float64)
@@ -89,4 +88,12 @@ func OutputTotalCarbon(iterableName string, iterable *[]string, computeFn func(m
 	}
 
 	writer.Stop()
+}
+
+func computeAndUpdateCarbonConsumption(containerCarbon map[ContainerRegion]float64, container string, power float64, item string, carbon float64) {
+	carbonConsumed := power * carbon * 10 / 216 // Carbon is in gCo2/H converting here to mgCo2/S
+	log.Debug(fmt.Sprintf("Location: %s Rating: %f Power: %f", location, carbon, power))
+	mutex.Lock() // Map write operations are not thread safe and this function is called in parallel
+	containerCarbon[ContainerRegion{container, item}] = carbonConsumed
+	mutex.Unlock()
 }

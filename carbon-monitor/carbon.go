@@ -9,7 +9,6 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// TODO put this somewhere better, ideally make it configurable via cli ie allow a --all option/ commar separated list of ones you care about
 var defaultRegions = []string{
 	"australiacentral",
 	"australiacentral2",
@@ -36,6 +35,7 @@ var defaultRegions = []string{
 var timeZones = []string{"0", "4", "8", "12", "16", "20"}
 
 // TODO read from env var?
+// Likely needed with implementation of prometheus exporter mode
 var delay = time.Second * 0
 
 var mutex = &sync.Mutex{}
