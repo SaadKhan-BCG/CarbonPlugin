@@ -63,6 +63,10 @@ func GraphMode(region string) {
 	asciPlot(region)
 }
 
+func ListValidRegions() []string {
+	return defaultRegions
+}
+
 func init() {
 	log.SetLevel(log.ErrorLevel)
 
