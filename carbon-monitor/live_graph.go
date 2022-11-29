@@ -81,7 +81,7 @@ func asciPlot(region string) {
 		fmt.Print(ansiColour, legend)
 
 	}
-	fmt.Println(ansiDefault, "Live Carbon Consumption by Container: ") // Reset colour
+	fmt.Println(ansiDefault, "Live Carbon Consumption by Container (mgCo2Eq/s): ") // Reset colour
 
 	if err != nil {
 		logrus.Fatal("Failed to Initialise Docker Client", err)

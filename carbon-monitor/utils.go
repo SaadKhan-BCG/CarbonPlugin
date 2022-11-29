@@ -16,7 +16,7 @@ import (
 // Iterate over outputs instead of totalCarbon keys as map key ordering is not consistent so the output is harder to read
 func outputLiveConsumption(writer *uilive.Writer, totalCarbon map[string]float64, outputs *[]string, name string) {
 	for _, output := range *outputs {
-		_, _ = fmt.Fprintf(writer, "%s: %s Carbon Consumed: %f\n", name, output, totalCarbon[output])
+		_, _ = fmt.Fprintf(writer, "%s: %s Carbon Consumed: %fmgCo2Eq\n", name, output, totalCarbon[output])
 	}
 }
 
