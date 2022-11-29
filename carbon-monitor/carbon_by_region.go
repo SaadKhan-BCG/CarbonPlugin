@@ -12,7 +12,7 @@ func ComputeCurrentCarbonConsumption(containerCarbon map[ContainerRegion]float64
 	defer wg.Done()
 	carbon, err := carbonemissions.GetCurrentCarbonEmissions(location)
 	if err != nil {
-		error_handler.StdErrorHandler(fmt.Sprintf("Failed to compute carbon for Container: %s Region: %s as could not get Carbon data", container, location), err)
+		error_handler.StdErrorHandler(fmt.Sprintf("Failed fetching emissions data for Container: %s Region: %s ", container, location), err)
 	} else {
 		carbonConsumed := power * carbon * 10 / 216 // Carbon is in gCo2/H converting here to mgCo2/S
 		log.Debug(fmt.Sprintf("Location: %s Rating: %f Power: %f", location, carbon, power))

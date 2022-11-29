@@ -2,6 +2,7 @@ package carbon_emissions
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"io"
@@ -21,10 +22,24 @@ var carbonRegionTimeCache map[string]float64 // TODO Start using time cache too
 var mutex = &sync.Mutex{}
 
 type carbonAwareResponse struct {
-	Rating   float64     `json:"rating"`
-	Location interface{} `json:"location"`
-	Time     interface{} `json:"time"`
-	Duration interface{} `json:"duration"`
+	Rating float64 `json:"rating"`
+}
+
+type errorResponse struct {
+	Detail string `json:"detail"`
+}
+
+func handleResponse[_ io.ReadCloser, T []carbonAwareResponse | errorResponse](responseBody io.ReadCloser, data *T) error {
+	defer responseBody.Close()
+	body, err := io.ReadAll(responseBody)
+	if err != nil {
+		return err
+	}
+	err = json.Unmarshal(body, data)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func getCarbonEmissions(location string, prevTime string, toTime string) (float64, error) {
@@ -32,17 +47,20 @@ func getCarbonEmissions(location string, prevTime string, toTime string) (float6
 	resp, err := http.Get(url)
 	if err != nil {
 		return 0, err
-	}
-	defer resp.Body.Close()
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return 0, err
+	} else if resp.StatusCode != 200 {
+		var errData errorResponse
+		err = handleResponse[io.ReadCloser, errorResponse](resp.Body, &errData)
+		if err != nil {
+			return 0, err
+		}
+
+		return 0, errors.New(fmt.Sprintf("Invalid Response from Carbon SDK: %s \n Cause: %s", resp.Status, errData.Detail))
 	}
 
 	var data []carbonAwareResponse
-	err = json.Unmarshal(body, &data)
+	err = handleResponse[io.ReadCloser, []carbonAwareResponse](resp.Body, &data)
 	if err != nil {
-		panic(err.Error())
+		return 0, err
 	}
 	return data[0].Rating, nil
 }
@@ -59,7 +77,10 @@ func GetCarbonEmissionsByTime(location string, utcTime time.Time) (float64, erro
 	if rating > 0 {
 		return rating, nil
 	} else {
-		rating, _ = getCarbonEmissions(location, prevTime, toTime)
+		rating, err := getCarbonEmissions(location, prevTime, toTime)
+		if err != nil {
+			return 0, err
+		}
 		mutex.Lock()
 		carbonRegionCache[location] = rating
 		mutex.Unlock()
