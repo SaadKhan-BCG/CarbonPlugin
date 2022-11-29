@@ -27,6 +27,7 @@ func outputLiveConsumption(writer *uilive.Writer, totalCarbon map[string]float64
 		@param computeFn: Function which takes as input containerCarbon -> map(containerName, item) -> carbon consumed, containerName, power (consumed by container), item.
 	                      Should update containerCarbon with the correct carbon value for containerName, item tuple
 */
+//goland:noinspection GoPrintFunctions
 func OutputTotalCarbon(iterableName string, iterable *[]string, computeFn func(map[ContainerRegion]float64, string, float64, string, *sync.WaitGroup)) {
 	cli, err := client.NewEnvClient()
 	if err != nil {
@@ -47,6 +48,7 @@ func OutputTotalCarbon(iterableName string, iterable *[]string, computeFn func(m
 	writer := uilive.New()
 	writer.Start()
 
+	fmt.Println("Total Carbon consumption of running containers: \n")
 	for {
 		time.Sleep(delay)
 
