@@ -47,36 +47,29 @@ type ContainerRegion struct {
 	item      string // Some second dimension to group data on, ie region, time
 }
 
-func main() {
-	//defaultRegions = []string{"ukwest", "uksouth", "australiacentral"}
-	RegionMode(&defaultRegions)
-	//TimeMode("uksouth")
-	//graphMode("uksouth")
-}
-
 func RegionMode(regions *[]string) {
-	log.SetLevel(log.ErrorLevel)
-
-	os.Setenv("CARBON_SDK_URL", "https://carbon-aware-api.azurewebsites.net")
-	carbonemissions.LoadSettings()
-
 	OutputTotalCarbon("Region", regions, ComputeCurrentCarbonConsumption)
 }
 
 func TimeMode(region string) {
-	log.SetLevel(log.ErrorLevel)
-
-	os.Setenv("CARBON_SDK_URL", "https://carbon-aware-api.azurewebsites.net")
-	carbonemissions.LoadSettings()
-
 	SetLocation(region)
 	OutputTotalCarbon("Hour", &timeZones, ComputeCarbonConsumptionByTime)
 }
 
 func graphMode(region string) {
+	asciPlot(region)
+}
+
+func init() {
 	log.SetLevel(log.ErrorLevel)
 
 	os.Setenv("CARBON_SDK_URL", "https://carbon-aware-api.azurewebsites.net")
 	carbonemissions.LoadSettings()
-	asciPlot(region)
 }
+
+//func main() {
+//	//defaultRegions = []string{"ukwest", "uksouth", "australiacentral"}
+//	//RegionMode(&defaultRegions)
+//	//TimeMode("uksouth")
+//	//graphMode("uksouth")
+//}
