@@ -1,4 +1,4 @@
-package main
+package carbon
 
 import (
 	"os"
@@ -48,6 +48,9 @@ type ContainerRegion struct {
 }
 
 func RegionMode(regions *[]string) {
+	if len(*regions) < 1 {
+		regions = &defaultRegions
+	}
 	OutputTotalCarbon("Region", regions, ComputeCurrentCarbonConsumption)
 }
 
@@ -56,7 +59,7 @@ func TimeMode(region string) {
 	OutputTotalCarbon("Hour", &timeZones, ComputeCarbonConsumptionByTime)
 }
 
-func graphMode(region string) {
+func GraphMode(region string) {
 	asciPlot(region)
 }
 
@@ -71,5 +74,5 @@ func init() {
 //	//defaultRegions = []string{"ukwest", "uksouth", "australiacentral"}
 //	//RegionMode(&defaultRegions)
 //	//TimeMode("uksouth")
-//	//graphMode("uksouth")
+//	//GraphMode("uksouth")
 //}
