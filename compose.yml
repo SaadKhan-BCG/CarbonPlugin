@@ -14,9 +14,9 @@ services:
     image: saadbcg/carbon-plugin-prometheus-exporter:2.0.0
     environment:
       TIME_REGIONS: "westus"
-#      CARBON_SDK_URL: "https://carbon-aware-api.azurewebsites.net"
-      CARBON_SDK_PORT: 80
-      CARBON_SDK_HOST: carbon-aware-sdk-webapi
+      CARBON_SDK_URL: "https://carbon-aware-api.azurewebsites.net"
+#      CARBON_SDK_PORT: 80
+#      CARBON_SDK_HOST: carbon-aware-sdk-webapi
     ports:
       - 2112:2112
     volumes:
