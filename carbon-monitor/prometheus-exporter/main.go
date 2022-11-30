@@ -18,7 +18,9 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
-var Regions = carbon.ListValidRegions()
+//var Regions = carbon.ListValidRegions()
+
+var Regions = []string{"westus"} // Temp while only using free account
 var RegionLen = len(Regions)
 
 func recordMetrics() {
@@ -106,8 +108,7 @@ var timeRegionStr string
 var TimeRegions []string
 var TimeRegionsLen int
 
-func main() {
-	log.SetLevel(log.InfoLevel)
+func readFlags() {
 	flag.StringVar(&timeRegionStr, "timeRegions", "", "Regions to collect and export time data on")
 	flag.Parse()
 
@@ -117,10 +118,23 @@ func main() {
 		TimeRegions = strings.Split(timeRegionStr, ",")
 	}
 	TimeRegionsLen = len(TimeRegions) * 6 // 6 time points per region ie one every 4 hours
+}
 
+func startPrometheusMetrics() {
 	registerMetrics()
 	recordMetrics()
 
 	http.Handle("/metrics", promhttp.Handler())
 	http.ListenAndServe(":2112", nil)
+}
+
+func main() {
+	log.SetLevel(log.InfoLevel)
+
+	carbon.LoadEnvVars()
+	carbonemissions.LoadSettings()
+
+	readFlags()
+
+	startPrometheusMetrics()
 }

@@ -16,19 +16,19 @@ services:
       - 3001:3001
     links:
       - prometheus
-#  prometheus-exporter:
-#    build: ./prometheus-exporter
-#    environment:
-#      TIME_REGIONS: "uksouth, westus"
+  prometheus-exporter:
+    build: ./carbon-monitor/prometheus-exporter
+    environment:
+      TIME_REGIONS: "westus"
 #      CARBON_SDK_URL: "https://carbon-aware-api.azurewebsites.net"
-##      CARBON_SDK_PORT: 80
-##      CARBON_SDK_HOST: carbon-aware-sdk-webapi
-#    ports:
-#      - 9877:9877
-#    volumes:
-#      - /var/run/docker.sock:/var/run/docker.sock
-#    links:
-#      - carbon-aware-sdk-webapi
+      CARBON_SDK_PORT: 80
+      CARBON_SDK_HOST: carbon-aware-sdk-webapi
+    ports:
+      - 2112:2112
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    links:
+      - carbon-aware-sdk-webapi
   carbon-aware-sdk-webapi:
     image: saadbcg/carbon-aware-sdk-webapi:0.0.1  # Note this is built manually from the carbon aware source code
     environment:

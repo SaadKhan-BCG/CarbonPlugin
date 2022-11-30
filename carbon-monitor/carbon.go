@@ -1,6 +1,7 @@
 package carbon
 
 import (
+	"fmt"
 	carbonemissions "github.com/SaadKhan-BCG/CarbonPlugin/carbon-monitor/carbon_emissions"
 	log "github.com/sirupsen/logrus"
 	"os"
@@ -61,12 +62,21 @@ func ListValidRegions() []string {
 	return defaultRegions
 }
 
+func LoadEnvVars() {
+	os.Setenv("CARBON_SDK_URL", "https://carbon-aware-api.azurewebsites.net")
+	carbonUrl := os.Getenv("CARBON_SDK_URL")
+
+	if len(carbonUrl) < 1 {
+		host := GetOrElsEnvVars("CARBON_SDK_HOST", "localhost")
+		port := GetOrElsEnvVars("CARBON_SDK_PORT", "8080")
+		log.Error(fmt.Sprintf("CarbonAwareSDK: CARBON_SDK_URL not found defaulting to http://%s:%s", host, port))
+	} else {
+		log.Info(fmt.Sprintf("Using Carbon Aware SDK at %s", carbonUrl))
+	}
+}
+
 func init() {
 	log.SetLevel(log.ErrorLevel)
-
-	//os.Setenv("CARBON_SDK_URL", "https://carbon-aware-api.azurewebsites.net")
-	os.Setenv("CARBON_SDK_HOST", "localhost")
-	os.Setenv("CARBON_SDK_PORT", "8080")
-
+	LoadEnvVars()
 	carbonemissions.LoadSettings()
 }

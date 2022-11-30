@@ -7,6 +7,7 @@ import (
 	"github.com/docker/docker/client"
 	"github.com/gosuri/uilive"
 	log "github.com/sirupsen/logrus"
+	"os"
 	"sync"
 	"time"
 )
@@ -94,4 +95,14 @@ func computeAndUpdateCarbonConsumption(containerCarbon map[ContainerRegion]float
 	mutex.Lock() // Map write operations are not thread safe and this function is called in parallel
 	containerCarbon[ContainerRegion{container, item}] = carbonConsumed
 	mutex.Unlock()
+}
+
+func GetOrElsEnvVars(ENV_VAR string, defaultVar string) string {
+	envVar := os.Getenv(ENV_VAR)
+	if len(envVar) > 0 {
+		return envVar
+	}
+
+	os.Setenv(ENV_VAR, defaultVar)
+	return defaultVar
 }

@@ -65,6 +65,15 @@ func asciPlot(region string) {
 		All: false,
 	})
 
+	n := 0
+	for _, container := range containers { // Filter to ignore carbon-plugin containers
+		if !container_stats.FilterPluginContainers(container.Names[0]) {
+			containers[n] = container
+			n++
+		}
+	}
+	containers = containers[:n]
+
 	// Need a static list of names for the line graph, the maps they're stored in lower don't respect ordering
 	var containerNames []string
 	for i, container := range containers {
