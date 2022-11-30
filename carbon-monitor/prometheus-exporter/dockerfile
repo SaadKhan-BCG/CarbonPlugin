@@ -3,8 +3,4 @@ FROM scratch
 # Compile binary with GOOS=linux go build
 COPY prometheus-exporter /app/
 
-ARG TIME_REGIONS
-ENV TIME_REGIONS $TIME_REGIONS
-
-# TODO pass region correctly
 CMD ["/app/prometheus-exporter"]

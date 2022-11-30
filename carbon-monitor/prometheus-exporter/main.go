@@ -10,6 +10,7 @@ import (
 	"github.com/docker/docker/client"
 	log "github.com/sirupsen/logrus"
 	"net/http"
+	"os"
 	"strings"
 	"sync"
 	"time"
@@ -112,8 +113,14 @@ func readFlags() {
 	flag.StringVar(&timeRegionStr, "timeRegions", "", "Regions to collect and export time data on")
 	flag.Parse()
 
-	if timeRegionStr == "" { // Parse no values as empty list to prevent querying for region ""
-		TimeRegions = []string{}
+	if len(timeRegionStr) == 0 {
+		timeRegionStr = os.Getenv("TIME_REGIONS") // If not set via cli check env var
+		if len(timeRegionStr) > 0 {
+			TimeRegions = strings.Split(timeRegionStr, ",")
+		} else {
+			TimeRegions = []string{} // Parse no values as empty list to prevent querying for region ""
+		}
+
 	} else {
 		TimeRegions = strings.Split(timeRegionStr, ",")
 	}
