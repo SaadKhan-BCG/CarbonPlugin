@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/SaadKhan-BCG/CarbonPlugin/carbon-monitor/carbon_emissions"
 	"github.com/SaadKhan-BCG/CarbonPlugin/carbon-monitor/container_stats"
-	"github.com/SaadKhan-BCG/CarbonPlugin/carbon-monitor/error_handler"
+	errorhandler "github.com/SaadKhan-BCG/CarbonPlugin/carbon-monitor/error_handler"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
 	"github.com/gosuri/uilive"
@@ -65,6 +65,15 @@ func asciPlot(region string) {
 		All: false,
 	})
 
+	n := 0
+	for _, container := range containers { // Filter to ignore carbon-plugin containers
+		if !container_stats.FilterPluginContainers(container.Names[0]) {
+			containers[n] = container
+			n++
+		}
+	}
+	containers = containers[:n]
+
 	// Need a static list of names for the line graph, the maps they're stored in lower don't respect ordering
 	var containerNames []string
 	for i, container := range containers {
@@ -100,7 +109,7 @@ func asciPlot(region string) {
 		carbon, err := carbon_emissions.GetCurrentCarbonEmissions(region)
 
 		if err != nil {
-			error_handler.StdErrorHandler(fmt.Sprintf("Failed to get carbon data for region: %s", region), err)
+			errorhandler.StdErrorHandler(fmt.Sprintf("Failed to get carbon data for region: %s", region), err)
 		} else {
 			for index, container := range containerNames {
 				power := containerPower[container]

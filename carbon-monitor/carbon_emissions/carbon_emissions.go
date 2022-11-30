@@ -77,15 +77,15 @@ func GetCarbonEmissionsByTime(location string, utcTime time.Time) (float64, erro
 	if rating > 0 {
 		return rating, nil
 	} else {
-		rating, err := getCarbonEmissions(location, prevTime, toTime)
+		newRating, err := getCarbonEmissions(location, prevTime, toTime)
 		if err != nil {
 			return 0, err
 		}
 		mutex.Lock()
-		carbonRegionCache[location] = rating
+		carbonRegionCache[location] = newRating
 		mutex.Unlock()
+		return newRating, nil
 	}
-	return rating, nil
 }
 
 func GetCurrentCarbonEmissions(location string) (float64, error) {

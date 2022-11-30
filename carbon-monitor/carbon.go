@@ -1,12 +1,11 @@
 package carbon
 
 import (
-	"os"
-	"sync"
-	"time"
-
+	"fmt"
 	carbonemissions "github.com/SaadKhan-BCG/CarbonPlugin/carbon-monitor/carbon_emissions"
 	log "github.com/sirupsen/logrus"
+	"os"
+	"sync"
 )
 
 var defaultRegions = []string{
@@ -33,10 +32,6 @@ var defaultRegions = []string{
 }
 
 var timeZones = []string{"0", "4", "8", "12", "16", "20"}
-
-// TODO read from env var?
-// Likely needed with implementation of prometheus exporter mode
-var delay = time.Second * 0
 
 var mutex = &sync.Mutex{}
 
@@ -67,16 +62,20 @@ func ListValidRegions() []string {
 	return defaultRegions
 }
 
-func init() {
-	log.SetLevel(log.ErrorLevel)
+func LoadEnvVars() {
+	carbonUrl := os.Getenv("CARBON_SDK_URL")
 
-	os.Setenv("CARBON_SDK_URL", "https://carbon-aware-api.azurewebsites.net")
-	carbonemissions.LoadSettings()
+	if len(carbonUrl) < 1 {
+		host := GetOrElsEnvVars("CARBON_SDK_HOST", "localhost")
+		port := GetOrElsEnvVars("CARBON_SDK_PORT", "8080")
+		log.Info(fmt.Sprintf("CarbonAwareSDK: CARBON_SDK_URL not found defaulting to http://%s:%s", host, port))
+	} else {
+		log.Info(fmt.Sprintf("Using Carbon Aware SDK at %s", carbonUrl))
+	}
 }
 
-//func main() {
-//	//defaultRegions = []string{"ukwest", "uksouth", "australiacentral"}
-//	//RegionMode(&defaultRegions)
-//	//TimeMode("uksouth")
-//	//GraphMode("uksouth")
-//}
+func init() {
+	log.SetLevel(log.ErrorLevel)
+	LoadEnvVars()
+	carbonemissions.LoadSettings()
+}

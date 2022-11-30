@@ -3,7 +3,7 @@ package carbon
 import (
 	"fmt"
 	carbonemissions "github.com/SaadKhan-BCG/CarbonPlugin/carbon-monitor/carbon_emissions"
-	"github.com/SaadKhan-BCG/CarbonPlugin/carbon-monitor/error_handler"
+	errorhandler "github.com/SaadKhan-BCG/CarbonPlugin/carbon-monitor/error_handler"
 	"strconv"
 	"sync"
 	"time"
@@ -19,7 +19,7 @@ func ComputeCarbonConsumptionByTime(containerCarbon map[ContainerRegion]float64,
 	defer wg.Done()
 	h, err := strconv.ParseInt(hour, 10, 64)
 	if err != nil {
-		error_handler.StdErrorHandler(fmt.Sprintf("Failed as could not parse hour value %s as int", hour), err)
+		errorhandler.StdErrorHandler(fmt.Sprintf("Failed as could not parse hour value %s as int", hour), err)
 		return
 	}
 	startTime := time.Now().AddDate(0, 0, -1)
@@ -27,7 +27,7 @@ func ComputeCarbonConsumptionByTime(containerCarbon map[ContainerRegion]float64,
 
 	carbon, err := carbonemissions.GetCarbonEmissionsByTime(location, startTime)
 	if err != nil {
-		error_handler.StdErrorHandler(fmt.Sprintf("Failed fetching emissions data for Container: %s Region: %s Hour: H%s ", container, location, hour), err)
+		errorhandler.StdErrorHandler(fmt.Sprintf("Failed fetching emissions data for Container: %s Region: %s Hour: H%s ", container, location, hour), err)
 	} else {
 		computeAndUpdateCarbonConsumption(containerCarbon, container, power, hour, carbon)
 	}

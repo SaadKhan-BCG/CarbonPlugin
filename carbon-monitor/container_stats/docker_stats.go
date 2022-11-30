@@ -8,6 +8,7 @@ import (
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
 	log "github.com/sirupsen/logrus"
+	"strings"
 	"sync"
 )
 
@@ -26,6 +27,16 @@ type EnergyProfile struct {
 	DISK    float64 `json:"DISK"`
 	NETWORK float64 `json:"NETWORK"`
 	PUE     float64 `json:"PUE"`
+}
+
+const ProjectName = "/carbon-plugin"
+
+// FilterPluginContainers Ignore docker containers belonging to the plugin itself
+func FilterPluginContainers(name string) bool {
+	if strings.HasPrefix(name, ProjectName) {
+		return true
+	}
+	return false
 }
 
 func GetCpuPower(stats *types.StatsJSON) float64 {
@@ -56,6 +67,9 @@ func GetNetworkPower(stats *types.StatsJSON) float64 {
 
 func GetSingleContainerStat(cli *client.Client, containerID string, containerName string, containerPower map[string]float64, wg *sync.WaitGroup) bool {
 	defer wg.Done()
+	if FilterPluginContainers(containerName) {
+		return true // Skip this container
+	}
 
 	stats, err := cli.ContainerStats(context.Background(), containerID, false)
 
