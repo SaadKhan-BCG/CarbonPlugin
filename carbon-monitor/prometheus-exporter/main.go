@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	carbon "github.com/SaadKhan-BCG/CarbonPlugin/carbon-monitor"
 	carbonemissions "github.com/SaadKhan-BCG/CarbonPlugin/carbon-monitor/carbon_emissions"
@@ -9,6 +10,7 @@ import (
 	"github.com/docker/docker/client"
 	log "github.com/sirupsen/logrus"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 
@@ -25,8 +27,8 @@ func recordMetrics() {
 		if err != nil {
 			log.Fatal("Failed to Initialise Docker Client", err)
 		}
-		containerPower := make(map[string]float64)
 		for {
+			containerPower := make(map[string]float64)
 			containerstats.GetDockerStats(cli, containerPower)
 			for container := range containerPower {
 				updateContainerMetrics(container, containerPower[container])
@@ -45,6 +47,28 @@ func updateContainerMetrics(containerName string, power float64) {
 		go updateContainerRegionMetrics(containerName, power, region, &wg)
 	}
 	wg.Wait()
+
+	//var wg2 sync.WaitGroup
+	//wg2.Add(TimeRegionsLen)
+	for _, region := range TimeRegions {
+		for i := 1; i < 6; i++ {
+			updateContainerTimeMetrics(containerName, power, region, i*4)
+		}
+	}
+	//wg2.Wait()
+}
+
+func updateContainerTimeMetrics(containerName string, power float64, region string, hour int) {
+	//defer wg.Done()
+	startTime := time.Now().AddDate(0, 0, -1)
+	startTime = startTime.Add((time.Duration(hour) - time.Duration(startTime.Hour())) * time.Hour)
+
+	carbonRate, err := carbonemissions.GetCarbonEmissionsByTime(region, startTime)
+	if err != nil {
+		errorhandler.StdErrorHandler(fmt.Sprintf("Failed fetching emissions data for Container: %s Region: %s ", containerName, region), err)
+	} else {
+		carbonConsumptionTime.WithLabelValues(containerName, region, fmt.Sprintf("%d", hour)).Set(power * carbonRate)
+	}
 }
 
 func updateContainerRegionMetrics(containerName string, power float64, region string, wg *sync.WaitGroup) {
@@ -78,8 +102,21 @@ func registerMetrics() {
 	prometheus.MustRegister(carbonConsumptionTime)
 }
 
+var timeRegionStr string
+var TimeRegions []string
+var TimeRegionsLen int
+
 func main() {
 	log.SetLevel(log.InfoLevel)
+	flag.StringVar(&timeRegionStr, "timeRegions", "", "Regions to collect and export time data on")
+	flag.Parse()
+
+	if timeRegionStr == "" { // Parse no values as empty list to prevent querying for region ""
+		TimeRegions = []string{}
+	} else {
+		TimeRegions = strings.Split(timeRegionStr, ",")
+	}
+	TimeRegionsLen = len(TimeRegions) * 6 // 6 time points per region ie one every 4 hours
 
 	registerMetrics()
 	recordMetrics()

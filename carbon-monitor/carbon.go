@@ -1,42 +1,36 @@
 package carbon
 
 import (
-	"os"
-	"sync"
-	"time"
-
 	carbonemissions "github.com/SaadKhan-BCG/CarbonPlugin/carbon-monitor/carbon_emissions"
 	log "github.com/sirupsen/logrus"
+	"os"
+	"sync"
 )
 
 var defaultRegions = []string{
-	"australiacentral",
-	"australiacentral2",
-	"australiaeast",
-	"australiasoutheast",
-	"canadacentral",
-	"canadaeast",
-	"centralus",
-	"centraluseuap",
-	"eastus",
-	"eastus2",
-	"eastus2euap",
-	"northcentralus",
-	"northeurope",
-	"southcentralus",
-	"uksouth",
-	"ukwest",
-	"westcentralus",
+	//"australiacentral",
+	//"australiacentral2",
+	//"australiaeast",
+	//"australiasoutheast",
+	//"canadacentral",
+	//"canadaeast",
+	//"centralus",
+	//"centraluseuap",
+	//"eastus",
+	//"eastus2",
+	//"eastus2euap",
+	//"northcentralus",
+	//"northeurope",
+	//"southcentralus",
+	//"uksouth",
+	//"ukwest",
+	//"westcentralus",
 	"westus",
-	"westus2",
-	"westus3",
+	//"westus2",
+	//"westus3",
 }
 
 var timeZones = []string{"0", "4", "8", "12", "16", "20"}
-
-// TODO read from env var?
-// Likely needed with implementation of prometheus exporter mode
-var delay = time.Second * 0
 
 var mutex = &sync.Mutex{}
 
@@ -70,13 +64,9 @@ func ListValidRegions() []string {
 func init() {
 	log.SetLevel(log.ErrorLevel)
 
-	os.Setenv("CARBON_SDK_URL", "https://carbon-aware-api.azurewebsites.net")
+	//os.Setenv("CARBON_SDK_URL", "https://carbon-aware-api.azurewebsites.net")
+	os.Setenv("CARBON_SDK_HOST", "localhost")
+	os.Setenv("CARBON_SDK_PORT", "8080")
+
 	carbonemissions.LoadSettings()
 }
-
-//func main() {
-//	//defaultRegions = []string{"ukwest", "uksouth", "australiacentral"}
-//	//RegionMode(&defaultRegions)
-//	//TimeMode("uksouth")
-//	//GraphMode("uksouth")
-//}

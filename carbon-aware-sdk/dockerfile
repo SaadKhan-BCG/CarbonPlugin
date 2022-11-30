@@ -1,0 +1,4 @@
+FROM saadbcg/carbon-aware-sdk-webapi
+
+ENV WattTimeClient__Username=saad
+ENV WattTimeClient__Password=saadkhan123!

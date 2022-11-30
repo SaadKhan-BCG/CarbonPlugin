@@ -49,8 +49,6 @@ func OutputTotalCarbon(iterableName string, iterable *[]string, computeFn func(m
 
 	fmt.Println("Total Carbon consumption of running containers: \n")
 	for {
-		time.Sleep(delay)
-
 		container_stats.GetDockerStats(cli, containerPower)
 		carbon_emissions.RefreshCarbonCache()
 

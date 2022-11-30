@@ -24,10 +24,8 @@ services:
     links:
       - carbon-aware-sdk-webapi
   carbon-aware-sdk-webapi:
-    image: saadbcg/carbon-aware-sdk-webapi  # Note this is built manually from the carbon aware source code
+    image: saadbcg/carbon-aware-sdk-webapi:0.0.1  # Note this is built manually from the carbon aware source code
     environment:
       CarbonAwareVars__CarbonIntensityDataSource: WattTime
-      WattTimeClient__Username: ${WattTimeClient__Username}
-      WattTimeClient__Password: ${WattTimeClient__Password}
     ports:
       - 8080:80
