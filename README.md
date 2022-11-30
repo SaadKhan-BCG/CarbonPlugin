@@ -25,35 +25,35 @@ And check 4. in Option 2 for details on the dashboard access
 1. Clone this repo or just use the compose file (also included as compose.yml in the repo):
 
  ```
- version: "3.7"
+version: "3.7"
 services:
   prometheus:
-    image: saadbcg/carbon-plugin-prometheus
+    image: saadbcg/carbon-plugin-prometheus:2.0.0
     ports:
       - 9090:9090
   grafana:
-    image: saadbcg/carbon-plugin-grafana
+    image: saadbcg/carbon-plugin-grafana:1.0.0
     ports:
       - 3001:3001
     links:
       - prometheus
   prometheus-exporter:
-    image: saadbcg/carbon-plugin-prometheus-exporter
+    image: saadbcg/carbon-plugin-prometheus-exporter:2.0.0
     environment:
-      TIME_REGIONS: "uksouth, westus"
+      TIME_REGIONS: "westus,uksouth"
       CARBON_SDK_URL: "https://carbon-aware-api.azurewebsites.net"
+#      CARBON_SDK_PORT: 80
+#      CARBON_SDK_HOST: carbon-aware-sdk-webapi
     ports:
-      - 9877:9877
+      - 2112:2112
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     links:
       - carbon-aware-sdk-webapi
   carbon-aware-sdk-webapi:
-    image: saadbcg/carbon-aware-sdk-webapi  # Note this is built manually from the carbon aware source code
+    image: saadbcg/carbon-aware-sdk-webapi:0.0.1  # Note this is built manually from the carbon aware source code
     environment:
       CarbonAwareVars__CarbonIntensityDataSource: WattTime
-      WattTimeClient__Username: ${WattTimeClient__Username}
-      WattTimeClient__Password: ${WattTimeClient__Password}
     ports:
       - 8080:80
  ```
