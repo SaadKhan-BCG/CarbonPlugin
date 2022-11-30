@@ -63,6 +63,8 @@ func ListValidRegions() []string {
 }
 
 func LoadEnvVars() {
+	// TODO think about a better way to avoid this. This line makes it impossible to configure nicely
+	os.Setenv("CARBON_SDK_URL", "https://carbon-aware-api.azurewebsites.net")
 	carbonUrl := os.Getenv("CARBON_SDK_URL")
 
 	if len(carbonUrl) < 1 {

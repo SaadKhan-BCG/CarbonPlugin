@@ -19,9 +19,8 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
-//var Regions = carbon.ListValidRegions()
+var Regions = carbon.ListValidRegions()
 
-var Regions = []string{"westus"} // Temp while only using free account
 var RegionLen = len(Regions)
 
 func recordMetrics() {
