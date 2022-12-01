@@ -37,8 +37,8 @@ jobs:
       - name: Build and push Exporter
         uses: docker/build-push-action@v3
         with:
-          context: "{{defaultContext}}:prometheus-exporter"
-          file: ./dockerfile
+          context: "{{defaultContext}}"
+          file: ./prometheus-exporter/dockerfile
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/carbon-plugin-prometheus-exporter:${{ env.RELEASE_VERSION }}
       - name: Switch to main branch to update compose
