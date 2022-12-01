@@ -43,6 +43,12 @@ jobs:
           file: ./dockerfile
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/carbon-plugin-prometheus-exporter:${{ env.RELEASE_VERSION }}
+      - name: Switch to main branch to update compose
+        run: |
+          git config --global user.name 'Khan-Saad'
+          git config --global user.email 'SaadKhan-BCG@users.noreply.github.com'
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+          git checkout main
       - name: Run playbook
         uses: dawidd6/action-ansible-playbook@v2
         with:
@@ -56,8 +62,5 @@ jobs:
           cat compose.yml
       - name: Commit New compose file
         run: |
-          git config --global user.name 'Khan-Saad'
-          git config --global user.email 'SaadKhan-BCG@users.noreply.github.com'
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
           git commit -am "Push updated compose file"
           git push origin main --force
