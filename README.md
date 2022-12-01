@@ -90,10 +90,22 @@ For all regions provided, you will be able to compare your app performance if it
   - Solution: 
     - first try ``docker volume prune -f`` and  ``docker system prune -f``
     - If needed also restart docker after these
-- Exporter is working but i only see some of my containers in grafana
+- Exporter is working, but I only see some of my containers in grafana
   - Grafana is often a little slow to grab all metrics so often waiting a few minutes and refreshing will solve it
   - If you wish to force it to refresh: click settings (cog next to time range at the top of dashboard) -> Variables -> (select variable you wish to refresh, usually container_name) -> Run query
 
+## Release Process
+This app is built and deployed using Github Actions, the release process is therefore fairly simple:
+- Merge code to main
+- Generate a Release on Github (create a new tag from main with your new version number of choice) and let CI build it
+
+## Contributing
+If you wish to contribute to this project please make a relevent PR and contact Saad Khan  (khan.saad@bcg.com) for review.
+For the convenience of developers, there is a build-compose.yml included in this repo. This will rebuild all local containers to allow you to rapidly test changes.
+Using this is fairly simple:
+- Make local code changes (to the exporter, config for prometheus etc)
+- Run ``docker compose -f build-compose.yml up --build`` to see changes applied in dashboard
+- Alternatively to test the prometheus-exporter (in particular its low power mode options), you can try out different running modes using the carbon-monitor/example application
     
 ## Carbon Calculation Methodology
 Very simply, we pull carbon data from the GSF carbon-awaresdk and multiple by power consumption (estimated using docker stats) to get overall carbon consumption over time.
