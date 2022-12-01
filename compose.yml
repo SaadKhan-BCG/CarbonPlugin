@@ -1,17 +1,18 @@
+# Warning! Do not edit the compose.yml directly, instead use compose.yml.j2 otherwise ci will overwrite your changes
 version: "3.7"
 services:
   prometheus:
-    image: saadbcg/carbon-plugin-prometheus:2.0.0
+    image: saadbcg/carbon-plugin-prometheus:v0.0.8-beta
     ports:
       - 9090:9090
   grafana:
-    image: saadbcg/carbon-plugin-grafana:2.0.0
+    image: saadbcg/carbon-plugin-grafana:v0.0.8-beta
     ports:
       - 3001:3001
     links:
       - prometheus
   prometheus-exporter:
-    image: saadbcg/carbon-plugin-prometheus-exporter:2.0.0
+    image: saadbcg/carbon-plugin-prometheus-exporter:v0.0.8-beta
     environment:
       TIME_REGIONS: "westus,uksouth"
       CARBON_SDK_URL: "https://carbon-aware-api.azurewebsites.net"
