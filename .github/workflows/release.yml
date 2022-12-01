@@ -54,3 +54,10 @@ jobs:
       - name: Test playbook
         run: |
           cat compose.yml
+      - name: Commit New compose file
+        run: |
+          git config --global user.name 'Khan-Saad'
+          git config --global user.email 'SaadKhan-BCG@users.noreply.github.com'
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+          git commit -am "Push updated compose file"
+          git push --set-upstream origin $(git branch --show-current) --force
