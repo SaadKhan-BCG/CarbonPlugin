@@ -35,7 +35,7 @@ jobs:
       - name: Build and push Exporter
         uses: docker/build-push-action@v3
         with:
-          context: "{{defaultContext}}:prometheus-exporter"
+          context: "{{defaultContext}}:carbon-monitor/prometheus-exporter"
           file: ./dockerfile
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/carbon-plugin-prometheus-exporter
