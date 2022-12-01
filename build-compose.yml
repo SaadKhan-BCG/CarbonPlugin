@@ -27,6 +27,7 @@ services:
       CARBON_SDK_URL: ${CARBON_SDK_URL:-https://carbon-aware-api.azurewebsites.net}
       CARBON_SDK_PORT: ${CARBON_SDK_PORT:-80} # 80
       CARBON_SDK_HOST: ${CARBON_SDK_HOST:-carbon-aware-sdk-webapi} # carbon-aware-sdk-webapi
+      LOCAL_MODE: false # set this to true to force using PORT and HOST mode
     ports:
       - 2112:2112
     volumes:

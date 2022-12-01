@@ -63,9 +63,10 @@ func ListValidRegions() []string {
 }
 
 func LoadEnvVars() {
-	// TODO think about a better way to avoid this. This line makes it impossible to configure nicely
-	//os.Setenv("CARBON_SDK_URL", "https://carbon-aware-api.azurewebsites.net")
-	carbonUrl := os.Getenv("CARBON_SDK_URL")
+	carbonUrl := ""
+	if os.Getenv("LOCAL_MODE") != "true" {
+		carbonUrl = GetOrElsEnvVars("CARBON_SDK_URL", "https://carbon-aware-api.azurewebsites.net")
+	}
 
 	if len(carbonUrl) < 4 { // At least 4 characters for http
 		host := GetOrElsEnvVars("CARBON_SDK_HOST", "localhost")
