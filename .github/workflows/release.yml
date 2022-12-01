@@ -28,21 +28,21 @@ jobs:
           context: "{{defaultContext}}:prometheus"
           file: ./dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/carbon-plugin-prometheus:$RELEASE_VERSION
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/carbon-plugin-prometheus:${{ env.RELEASE_VERSION }}
       - name: Build and push Grafana
         uses: docker/build-push-action@v3
         with:
           context: "{{defaultContext}}:grafana"
           file: ./dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/carbon-plugin-grafana:$RELEASE_VERSION
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/carbon-plugin-grafana:${{ env.RELEASE_VERSION }}
       - name: Build and push Exporter
         uses: docker/build-push-action@v3
         with:
           context: "{{defaultContext}}:carbon-monitor/prometheus-exporter"
           file: ./dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/carbon-plugin-prometheus-exporter:$RELEASE_VERSION
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/carbon-plugin-prometheus-exporter:${{ env.RELEASE_VERSION }}
       - name: Run playbook
         uses: dawidd6/action-ansible-playbook@v2
         with:
@@ -50,7 +50,7 @@ jobs:
           # Optional, directory where playbooks live
           directory: ./
           options: |
-            --extra-vars version=$RELEASE_VERSION
+            --extra-vars version=${{ env.RELEASE_VERSION }}
       - name: Test playbook
         run: |
           cat compose.yml
