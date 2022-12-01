@@ -21,6 +21,9 @@ import (
 
 var Regions = carbon.ListValidRegions()
 
+// Useful when using free tier wattime and only westus data included
+//var Regions = []string{"westus"}
+
 var RegionLen = len(Regions)
 
 func recordMetrics() {
@@ -136,10 +139,8 @@ func startPrometheusMetrics() {
 
 func main() {
 	log.SetLevel(log.InfoLevel)
-
 	carbon.LoadEnvVars()
 	carbonemissions.LoadSettings()
-
 	readFlags()
 
 	startPrometheusMetrics()

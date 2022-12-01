@@ -69,7 +69,7 @@ func OutputTotalCarbon(iterableName string, iterable *[]string, computeFn func(m
 		diff = curTime.Sub(prevTime).Seconds()
 		prevTime = time.Now()
 		log.Debug(fmt.Sprintf("Time taken for iteration: %f Seconds", diff))
-		log.Info(fmt.Sprintf("Total Time Spend: %f Seconds", curTime.Sub(startTime).Seconds()))
+		log.Debug(fmt.Sprintf("Total Time Spend: %f Seconds", curTime.Sub(startTime).Seconds()))
 
 		for _, item := range *iterable {
 			for container := range containerPower {
@@ -79,7 +79,7 @@ func OutputTotalCarbon(iterableName string, iterable *[]string, computeFn func(m
 
 		// Note, Live logging requires the loglevel be set to error as info logging gets in the way
 		outputLiveConsumption(writer, totalCarbon, iterable, iterableName)
-		log.Info(totalCarbon)
+		log.Debug(totalCarbon)
 
 		// Empty the maps at the end of every iteration to prevent old reports staying
 		containerPower = make(map[string]float64)
