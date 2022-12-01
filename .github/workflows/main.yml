@@ -3,7 +3,7 @@ name: ci
 on:
   push:
     branches:
-      - "main"
+      - "develop"
 
 jobs:
   build:
@@ -35,7 +35,7 @@ jobs:
       - name: Build and push Exporter
         uses: docker/build-push-action@v3
         with:
-          context: "{{defaultContext}}:carbon-monitor/prometheus-exporter"
-          file: ./dockerfile
+          context: "{{defaultContext}}"
+          file: ./prometheus-exporter/dockerfile
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/carbon-plugin-prometheus-exporter

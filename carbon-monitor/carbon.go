@@ -64,20 +64,20 @@ func ListValidRegions() []string {
 
 func LoadEnvVars() {
 	// TODO think about a better way to avoid this. This line makes it impossible to configure nicely
-	os.Setenv("CARBON_SDK_URL", "https://carbon-aware-api.azurewebsites.net")
+	//os.Setenv("CARBON_SDK_URL", "https://carbon-aware-api.azurewebsites.net")
 	carbonUrl := os.Getenv("CARBON_SDK_URL")
 
-	if len(carbonUrl) < 1 {
+	if len(carbonUrl) < 4 { // At least 4 characters for http
 		host := GetOrElsEnvVars("CARBON_SDK_HOST", "localhost")
 		port := GetOrElsEnvVars("CARBON_SDK_PORT", "8080")
-		log.Info(fmt.Sprintf("CarbonAwareSDK: CARBON_SDK_URL not found defaulting to http://%s:%s", host, port))
+		log.Info(fmt.Sprintf("CarbonAwareSDK: CARBON_SDK_URL not found/valid defaulting to http://%s:%s", host, port))
 	} else {
 		log.Info(fmt.Sprintf("Using Carbon Aware SDK at %s", carbonUrl))
 	}
 }
 
 func init() {
-	log.SetLevel(log.ErrorLevel)
+	log.SetLevel(log.InfoLevel)
 	LoadEnvVars()
 	carbonemissions.LoadSettings()
 }
