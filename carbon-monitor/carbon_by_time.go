@@ -22,7 +22,7 @@ func ComputeCarbonConsumptionByTime(containerCarbon map[ContainerRegion]float64,
 		errorhandler.StdErrorHandler(fmt.Sprintf("Failed as could not parse hour value %s as int", hour), err)
 		return
 	}
-	startTime := time.Now().AddDate(0, 0, -1)
+	startTime := time.Now().AddDate(0, 0, -1) // Take the day before as the reference since today's values are not yet fully available
 	startTime = startTime.Add((time.Duration(h) - time.Duration(startTime.Hour())) * time.Hour)
 
 	carbon, err := carbonemissions.GetCarbonEmissionsByTime(location, startTime)
