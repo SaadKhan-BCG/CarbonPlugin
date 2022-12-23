@@ -38,19 +38,20 @@ func OutputTotalCarbon(iterableName string, iterable *[]string, computeFn func(m
 
 	wgCount = len(*iterable)
 
+	var iterationDurationInSeconds int64
+	var totalTimeInSeconds int64
+	var iterationStartUnixTime int64
 	containerPower := make(map[string]float64)
 	containerCarbon := make(map[ContainerRegion]float64)
 	totalCarbon := make(map[string]float64)
-	startTime := time.Now()
-	curTime := time.Now()
-	prevTime := time.Now()
-	diff := 0.0
 
 	writer := uilive.New()
 	writer.Start()
 
-	fmt.Println("Total Carbon consumption of running containers: \n")
+	fmt.Println("Total Carbon consumption of running containers:")
+	startUnixTime := time.Now().Unix()
 	for {
+		iterationStartUnixTime = time.Now().Unix()
 		container_stats.GetDockerStats(cli, containerPower)
 		carbon_emissions.RefreshCarbonCache()
 
@@ -66,15 +67,15 @@ func OutputTotalCarbon(iterableName string, iterable *[]string, computeFn func(m
 		}
 		log.Debug(containerCarbon)
 
-		curTime = time.Now()
-		diff = curTime.Sub(prevTime).Seconds()
-		prevTime = time.Now()
-		log.Debug(fmt.Sprintf("Time taken for iteration: %f Seconds", diff))
-		log.Debug(fmt.Sprintf("Total Time Spend: %f Seconds", curTime.Sub(startTime).Seconds()))
+		iterationDurationInSeconds = time.Now().Unix() - iterationStartUnixTime
+		totalTimeInSeconds = time.Now().Unix() - startUnixTime
+
+		log.Debug(fmt.Sprintf("Time taken for iteration: %v Seconds", iterationDurationInSeconds))
+		log.Debug(fmt.Sprintf("Total Time Spend: %v Seconds", totalTimeInSeconds))
 
 		for _, item := range *iterable {
 			for container := range containerPower {
-				totalCarbon[item] += containerCarbon[ContainerRegion{container, item}] * diff
+				totalCarbon[item] += containerCarbon[ContainerRegion{container, item}] * float64(iterationDurationInSeconds)
 			}
 		}
 
