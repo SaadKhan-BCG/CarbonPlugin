@@ -2,14 +2,15 @@ package carbon
 
 import (
 	"fmt"
+	"os"
+	"sync"
+	"time"
+
 	"github.com/SaadKhan-BCG/CarbonPlugin/carbon-monitor/carbon_emissions"
 	"github.com/SaadKhan-BCG/CarbonPlugin/carbon-monitor/container_stats"
 	"github.com/docker/docker/client"
 	"github.com/gosuri/uilive"
 	log "github.com/sirupsen/logrus"
-	"os"
-	"sync"
-	"time"
 )
 
 // Outputs live updating console log of Carbon Data as stored in "totalCarbon"
