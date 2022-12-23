@@ -2,10 +2,11 @@ package carbon
 
 import (
 	"fmt"
-	carbonemissions "github.com/SaadKhan-BCG/CarbonPlugin/carbon-monitor/carbon_emissions"
-	log "github.com/sirupsen/logrus"
 	"os"
 	"sync"
+
+	carbonemissions "github.com/SaadKhan-BCG/CarbonPlugin/carbon-monitor/carbon_emissions"
+	log "github.com/sirupsen/logrus"
 )
 
 var defaultRegions = []string{
@@ -50,7 +51,7 @@ func RegionMode(regions *[]string) {
 }
 
 func TimeMode(region string) {
-	SetLocation(region)
+	SetRegion(region)
 	OutputTotalCarbon("Hour", &timeZones, ComputeCarbonConsumptionByTime)
 }
 

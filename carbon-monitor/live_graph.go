@@ -3,6 +3,8 @@ package carbon
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/SaadKhan-BCG/CarbonPlugin/carbon-monitor/carbon_emissions"
 	"github.com/SaadKhan-BCG/CarbonPlugin/carbon-monitor/container_stats"
 	errorhandler "github.com/SaadKhan-BCG/CarbonPlugin/carbon-monitor/error_handler"
@@ -11,7 +13,6 @@ import (
 	"github.com/gosuri/uilive"
 	ag "github.com/guptarohit/asciigraph"
 	"github.com/sirupsen/logrus"
-	"time"
 )
 
 var colours = ag.SeriesColors(
@@ -60,6 +61,9 @@ var colourCount = len(colourNames)
 
 func asciPlot(region string) {
 	cli, err := client.NewEnvClient()
+	if err != nil {
+		logrus.Fatal(err)
+	}
 
 	containers, err := cli.ContainerList(context.Background(), types.ContainerListOptions{
 		All: false,
@@ -95,15 +99,16 @@ func asciPlot(region string) {
 		logrus.Fatal("Failed to Initialise Docker Client", err)
 	}
 
+	var iterationDurationInSeconds int64
+	var lastIterationStartTimeUnix int64
 	containerPower := make(map[string]float64)
 	graphData := make([][]float64, len(containerNames))
-	curTime := time.Now()
-	prevTime := time.Now()
-	diff := 0.0
 	writer := uilive.New()
 	writer.Start()
+	defer writer.Stop()
 
 	for {
+		lastIterationStartTimeUnix = time.Now().Unix()
 		container_stats.GetDockerStats(cli, containerPower)
 		carbon_emissions.RefreshCarbonCache()
 		carbon, err := carbon_emissions.GetCurrentCarbonEmissions(region)
@@ -114,8 +119,8 @@ func asciPlot(region string) {
 			for index, container := range containerNames {
 				power := containerPower[container]
 
-				carbonConsumed := diff * power * carbon * 10 / 216 // Carbon is in gCo2/H converting here to mgCo2/S
-				logrus.Debug(fmt.Sprintf("Location: %s Rating: %f Power: %f", region, carbon, power))
+				carbonConsumed := float64(iterationDurationInSeconds) * power * carbon * 10 / 216 // Carbon is in gCo2/H converting here to mgCo2/S
+				logrus.Debug(fmt.Sprintf("Region: %s Rating: %f Power: %f", region, carbon, power))
 				graphData[index] = append(graphData[index], carbonConsumed)
 			}
 		}
@@ -129,9 +134,6 @@ func asciPlot(region string) {
 
 		fmt.Fprintln(writer, graph)
 
-		curTime = time.Now()
-		diff = curTime.Sub(prevTime).Seconds()
-		prevTime = time.Now()
+		iterationDurationInSeconds = time.Now().Unix() - lastIterationStartTimeUnix
 	}
-	writer.Stop()
 }

@@ -4,12 +4,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	log "github.com/sirupsen/logrus"
 	"io"
 	"net/http"
 	"os"
 	"sync"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 
 	errorhandler "github.com/SaadKhan-BCG/CarbonPlugin/carbon-monitor/error_handler"
 )
@@ -42,8 +43,8 @@ func handleResponse[_ io.ReadCloser, T []carbonAwareResponse | errorResponse](re
 	return nil
 }
 
-func getCarbonEmissions(location string, prevTime string, toTime string) (float64, error) {
-	url := fmt.Sprintf("%s/emissions/bylocation?location=%s&time=%s&toTime=%s", baseUrl, location, prevTime, toTime)
+func getCarbonEmissions(region string, prevTime string, toTime string) (float64, error) {
+	url := fmt.Sprintf("%s/emissions/bylocation?location=%s&time=%s&toTime=%s", baseUrl, region, prevTime, toTime)
 	resp, err := http.Get(url)
 	if err != nil {
 		return 0, err
@@ -69,32 +70,32 @@ func formatTimeAsString(time time.Time) string {
 	return time.Format("2006-01-02T15:04")
 }
 
-func GetCarbonEmissionsByTime(location string, utcTime time.Time) (float64, error) {
+func GetCarbonEmissionsByTime(region string, utcTime time.Time) (float64, error) {
 	toTime := formatTimeAsString(utcTime)
 	prevTime := formatTimeAsString(utcTime.Add(-time.Minute))
 
-	rating := carbonRegionCache[location]
+	rating := carbonRegionCache[region]
 	if rating > 0 {
 		return rating, nil
 	} else {
-		newRating, err := getCarbonEmissions(location, prevTime, toTime)
+		newRating, err := getCarbonEmissions(region, prevTime, toTime)
 		if err != nil {
 			return 0, err
 		}
 		mutex.Lock()
-		carbonRegionCache[location] = newRating
+		carbonRegionCache[region] = newRating
 		mutex.Unlock()
 		return newRating, nil
 	}
 }
 
-func GetCurrentCarbonEmissions(location string) (float64, error) {
-	rating, err := GetCarbonEmissionsByTime(location, time.Now())
+func GetCurrentCarbonEmissions(region string) (float64, error) {
+	rating, err := GetCarbonEmissionsByTime(region, time.Now().UTC())
 	if err != nil {
-		errorhandler.StdErrorHandler(fmt.Sprintf("Failure fetching emission data for Region: %s", location), err)
+		errorhandler.StdErrorHandler(fmt.Sprintf("Failure fetching emission data for Region: %s", region), err)
 		return 0, err
 	} else {
-		log.Debug(fmt.Sprintf("Location: %s Rating: %f", location, rating))
+		log.Debug(fmt.Sprintf("Region: %s Rating: %f", region, rating))
 		return rating, nil
 	}
 }
