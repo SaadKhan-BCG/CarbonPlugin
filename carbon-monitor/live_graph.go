@@ -3,6 +3,8 @@ package carbon
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/SaadKhan-BCG/CarbonPlugin/carbon-monitor/carbon_emissions"
 	"github.com/SaadKhan-BCG/CarbonPlugin/carbon-monitor/container_stats"
 	errorhandler "github.com/SaadKhan-BCG/CarbonPlugin/carbon-monitor/error_handler"
@@ -11,7 +13,6 @@ import (
 	"github.com/gosuri/uilive"
 	ag "github.com/guptarohit/asciigraph"
 	"github.com/sirupsen/logrus"
-	"time"
 )
 
 var colours = ag.SeriesColors(
