@@ -10,10 +10,10 @@ import (
 	errorhandler "github.com/SaadKhan-BCG/CarbonPlugin/carbon-monitor/error_handler"
 )
 
-var location string
+var region string
 
-func SetLocation(l string) {
-	location = l
+func SetRegion(r string) {
+	region = r
 }
 
 func ComputeCarbonConsumptionByTime(containerCarbon map[ContainerRegion]float64, container string, power float64, hour string, wg *sync.WaitGroup) {
@@ -31,9 +31,9 @@ func ComputeCarbonConsumptionByTime(containerCarbon map[ContainerRegion]float64,
 	yesterdayTime := currentTime.AddDate(0, 0, -1)
 	measureStartTime := time.Date(yesterdayTime.Year(), yesterdayTime.Month(), yesterdayTime.Day(), int(h), 0, 0, 0, currentLocation)
 
-	carbon, err := carbonemissions.GetCarbonEmissionsByTime(location, measureStartTime)
+	carbon, err := carbonemissions.GetCarbonEmissionsByTime(region, measureStartTime)
 	if err != nil {
-		errorhandler.StdErrorHandler(fmt.Sprintf("Failed fetching emissions data for Container: %s Region: %s Hour: H%s ", container, location, hour), err)
+		errorhandler.StdErrorHandler(fmt.Sprintf("Failed fetching emissions data for Container: %s Region: %s Hour: H%s ", container, region, hour), err)
 	} else {
 		computeAndUpdateCarbonConsumption(containerCarbon, container, power, hour, carbon)
 	}

@@ -51,7 +51,7 @@ func RegionMode(regions *[]string) {
 }
 
 func TimeMode(region string) {
-	SetLocation(region)
+	SetRegion(region)
 	OutputTotalCarbon("Hour", &timeZones, ComputeCarbonConsumptionByTime)
 }
 

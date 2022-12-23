@@ -120,7 +120,7 @@ func asciPlot(region string) {
 				power := containerPower[container]
 
 				carbonConsumed := float64(iterationDurationInSeconds) * power * carbon * 10 / 216 // Carbon is in gCo2/H converting here to mgCo2/S
-				logrus.Debug(fmt.Sprintf("Location: %s Rating: %f Power: %f", region, carbon, power))
+				logrus.Debug(fmt.Sprintf("Region: %s Rating: %f Power: %f", region, carbon, power))
 				graphData[index] = append(graphData[index], carbonConsumed)
 			}
 		}

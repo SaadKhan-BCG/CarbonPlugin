@@ -93,7 +93,7 @@ func OutputTotalCarbon(iterableName string, iterable *[]string, computeFn func(m
 
 func computeAndUpdateCarbonConsumption(containerCarbon map[ContainerRegion]float64, container string, power float64, item string, carbon float64) {
 	carbonConsumed := power * carbon * 10 / 216 // Carbon is in gCo2/H converting here to mgCo2/S
-	log.Debug(fmt.Sprintf("Location: %s Rating: %f Power: %f", location, carbon, power))
+	log.Debug(fmt.Sprintf("Region: %s Rating: %f Power: %f", region, carbon, power))
 	mutex.Lock() // Map write operations are not thread safe and this function is called in parallel
 	containerCarbon[ContainerRegion{container, item}] = carbonConsumed
 	mutex.Unlock()
