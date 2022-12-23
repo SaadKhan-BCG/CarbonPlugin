@@ -102,6 +102,7 @@ func asciPlot(region string) {
 	graphData := make([][]float64, len(containerNames))
 	writer := uilive.New()
 	writer.Start()
+	defer writer.Stop()
 
 	for {
 		iterationStartUnixTime = time.Now().Unix()
@@ -132,5 +133,4 @@ func asciPlot(region string) {
 
 		iterationDurationInSeconds = time.Now().Unix() - iterationStartUnixTime
 	}
-	writer.Stop()
 }
