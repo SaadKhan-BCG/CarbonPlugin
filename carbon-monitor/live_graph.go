@@ -100,7 +100,7 @@ func asciPlot(region string) {
 	}
 
 	var iterationDurationInSeconds int64
-	var iterationStartUnixTime int64
+	var lastIterationStartTimeUnix int64
 	containerPower := make(map[string]float64)
 	graphData := make([][]float64, len(containerNames))
 	writer := uilive.New()
@@ -108,7 +108,7 @@ func asciPlot(region string) {
 	defer writer.Stop()
 
 	for {
-		iterationStartUnixTime = time.Now().Unix()
+		lastIterationStartTimeUnix = time.Now().Unix()
 		container_stats.GetDockerStats(cli, containerPower)
 		carbon_emissions.RefreshCarbonCache()
 		carbon, err := carbon_emissions.GetCurrentCarbonEmissions(region)
@@ -134,6 +134,6 @@ func asciPlot(region string) {
 
 		fmt.Fprintln(writer, graph)
 
-		iterationDurationInSeconds = time.Now().Unix() - iterationStartUnixTime
+		iterationDurationInSeconds = time.Now().Unix() - lastIterationStartTimeUnix
 	}
 }

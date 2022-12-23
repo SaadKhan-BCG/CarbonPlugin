@@ -40,7 +40,7 @@ func OutputTotalCarbon(iterableName string, iterable *[]string, computeFn func(m
 
 	var iterationDurationInSeconds int64
 	var totalTimeInSeconds int64
-	var iterationStartUnixTime int64
+	var lastIterationStartTimeUnix int64
 	containerPower := make(map[string]float64)
 	containerCarbon := make(map[ContainerRegion]float64)
 	totalCarbon := make(map[string]float64)
@@ -49,9 +49,9 @@ func OutputTotalCarbon(iterableName string, iterable *[]string, computeFn func(m
 	writer.Start()
 
 	fmt.Println("Total Carbon consumption of running containers:")
-	startUnixTime := time.Now().Unix()
+	startTimeUnix := time.Now().Unix()
 	for {
-		iterationStartUnixTime = time.Now().Unix()
+		lastIterationStartTimeUnix = time.Now().Unix()
 		container_stats.GetDockerStats(cli, containerPower)
 		carbon_emissions.RefreshCarbonCache()
 
@@ -67,8 +67,8 @@ func OutputTotalCarbon(iterableName string, iterable *[]string, computeFn func(m
 		}
 		log.Debug(containerCarbon)
 
-		iterationDurationInSeconds = time.Now().Unix() - iterationStartUnixTime
-		totalTimeInSeconds = time.Now().Unix() - startUnixTime
+		iterationDurationInSeconds = time.Now().Unix() - lastIterationStartTimeUnix
+		totalTimeInSeconds = time.Now().Unix() - startTimeUnix
 
 		log.Debug(fmt.Sprintf("Time taken for iteration: %v Seconds", iterationDurationInSeconds))
 		log.Debug(fmt.Sprintf("Total Time Spend: %v Seconds", totalTimeInSeconds))
