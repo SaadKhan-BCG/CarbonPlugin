@@ -89,7 +89,7 @@ func GetCarbonEmissionsByTime(location string, utcTime time.Time) (float64, erro
 }
 
 func GetCurrentCarbonEmissions(location string) (float64, error) {
-	rating, err := GetCarbonEmissionsByTime(location, time.Now())
+	rating, err := GetCarbonEmissionsByTime(location, time.Now().UTC())
 	if err != nil {
 		errorhandler.StdErrorHandler(fmt.Sprintf("Failure fetching emission data for Region: %s", location), err)
 		return 0, err
