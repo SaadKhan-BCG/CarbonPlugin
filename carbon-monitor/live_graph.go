@@ -61,6 +61,9 @@ var colourCount = len(colourNames)
 
 func asciPlot(region string) {
 	cli, err := client.NewEnvClient()
+	if err != nil {
+		logrus.Fatal(err)
+	}
 
 	containers, err := cli.ContainerList(context.Background(), types.ContainerListOptions{
 		All: false,
