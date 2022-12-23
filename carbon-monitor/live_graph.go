@@ -96,15 +96,15 @@ func asciPlot(region string) {
 		logrus.Fatal("Failed to Initialise Docker Client", err)
 	}
 
+	var iterationDurationInSeconds int64
+	var iterationStartUnixTime int64
 	containerPower := make(map[string]float64)
 	graphData := make([][]float64, len(containerNames))
-	curTime := time.Now()
-	prevTime := time.Now()
-	diff := 0.0
 	writer := uilive.New()
 	writer.Start()
 
 	for {
+		iterationStartUnixTime = time.Now().Unix()
 		container_stats.GetDockerStats(cli, containerPower)
 		carbon_emissions.RefreshCarbonCache()
 		carbon, err := carbon_emissions.GetCurrentCarbonEmissions(region)
@@ -115,7 +115,7 @@ func asciPlot(region string) {
 			for index, container := range containerNames {
 				power := containerPower[container]
 
-				carbonConsumed := diff * power * carbon * 10 / 216 // Carbon is in gCo2/H converting here to mgCo2/S
+				carbonConsumed := float64(iterationDurationInSeconds) * power * carbon * 10 / 216 // Carbon is in gCo2/H converting here to mgCo2/S
 				logrus.Debug(fmt.Sprintf("Location: %s Rating: %f Power: %f", region, carbon, power))
 				graphData[index] = append(graphData[index], carbonConsumed)
 			}
@@ -130,9 +130,7 @@ func asciPlot(region string) {
 
 		fmt.Fprintln(writer, graph)
 
-		curTime = time.Now()
-		diff = curTime.Sub(prevTime).Seconds()
-		prevTime = time.Now()
+		iterationDurationInSeconds = time.Now().Unix() - iterationStartUnixTime
 	}
 	writer.Stop()
 }
