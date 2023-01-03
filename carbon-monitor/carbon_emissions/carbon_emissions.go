@@ -105,7 +105,7 @@ func RefreshCarbonCache() {
 }
 
 func LoadSettings() {
-	log.Info("Loading settings")
+	log.Debug("Loading settings")
 	RefreshCarbonCache()
 
 	url := os.Getenv("CARBON_SDK_URL")
@@ -119,5 +119,5 @@ func LoadSettings() {
 		}
 		baseUrl = fmt.Sprintf("http://%s:%s", host, port)
 	}
-	log.Info(fmt.Sprintf("Using Carbon Aware SDK at %s", baseUrl))
+	log.Debug(fmt.Sprintf("Using Carbon Aware SDK at %s", baseUrl))
 }
