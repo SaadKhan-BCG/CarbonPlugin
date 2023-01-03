@@ -72,9 +72,9 @@ func LoadEnvVars() {
 	if len(carbonUrl) < 4 { // At least 4 characters for http
 		host := GetOrElsEnvVars("CARBON_SDK_HOST", "localhost")
 		port := GetOrElsEnvVars("CARBON_SDK_PORT", "8080")
-		log.Info(fmt.Sprintf("CarbonAwareSDK: CARBON_SDK_URL not found/valid defaulting to http://%s:%s", host, port))
+		log.Debug(fmt.Sprintf("CarbonAwareSDK: CARBON_SDK_URL not found/valid defaulting to http://%s:%s", host, port))
 	} else {
-		log.Info(fmt.Sprintf("Using Carbon Aware SDK at %s", carbonUrl))
+		log.Debug(fmt.Sprintf("Using Carbon Aware SDK at %s", carbonUrl))
 	}
 }
 
