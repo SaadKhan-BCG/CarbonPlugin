@@ -108,7 +108,7 @@ Using this is fairly simple:
 - Alternatively to test the prometheus-exporter (in particular its low power mode options), you can try out different running modes using the carbon-monitor/example application
     
 ## Carbon Calculation Methodology
-Very simply, we pull carbon data from the GSF carbon-awaresdk and multiple by power consumption (estimated using docker stats) to get overall carbon consumption over time.
+TLDR, we pull carbon data from the GSF carbon-awaresdk and multiple by power consumption (estimated using docker stats) to get overall carbon consumption over time.
 
 
 ### Carbon
